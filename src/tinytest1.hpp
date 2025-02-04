@@ -35,12 +35,12 @@
 #define _stderr_color(tinytest_color) ((TINYTEST_COLORIZE_STDERR) ? tinytest_color : "")
 #define _line() "--------------------------------------------------------------------------------------------------------"
 /// @brief Defines what is done after an assertion fails. Internal use only.
-#define _assert_condition_failed(condition) \
+#define _assert_condition_failed(condition, additional_info) \
             test_failed(); \
             if (TINYTEST_ASSERTION_FAILED_TO_STDERR) \
                 std::cerr << _stderr_color(COLOR_RED) << _line() << "\nOn file: " << __FILE__ << " - Line " << _stderr_color(COLOR_MAGENTA) << __LINE__ << "\n" << \
                     _stderr_color(COLOR_RED) << "Assertion failed: `" << _stderr_color(COLOR_YELLOW) << #condition << _stderr_color(COLOR_RED) << "`\n" \
-                    << _line() << _stderr_color(COLOR_RESET) << std::endl;
+                    << additional_info << _line() << _stderr_color(COLOR_RESET) << std::endl;
 /// @brief Defines what is done after an assertion succeeds. Internal use only.
 #define _assert_condition_passed(condition) \
             TINYTEST_TESTS_PASSED_COUNT++; \
@@ -51,10 +51,10 @@
  * @param condition The condition of the assertion. Should evaluate to boolean.
  * @param callback What to do after the assertion fails.
  */
-#define assert(condition) \
+#define assert(condition, additional_message_on_failure) \
     { \
         if (!(condition)) { \
-            _assert_condition_failed(condition) \
+            _assert_condition_failed(condition, additional_message_on_failure) \
             if (TINYTEST_ASSERTION_FAILED_STOPS_EXECUTION) \
                 std::terminate(); \
         } else { \
@@ -62,8 +62,12 @@
         } \
     }
 
+/// @brief Internal use only. Gets called by test_assert and test_assert_pro.
+#define _base_test_assert(title) test_print(title); TINYTEST_ASSERTIONS_COUNT++
 /// @brief Creates a new test with an assertion and name.
-#define test_assert(title, assertion) test_print(title); TINYTEST_ASSERTIONS_COUNT++; assert(assertion)
+#define test_assert(title, assertion) _base_test_assert(title); assert(assertion, "")
+/// @brief Creates a new test with an assertion and name, along with something that should be added to the stderr upon failure
+#define test_assert_pro(title, assertion, additional_message_on_failure) _base_test_assert(title); assert(assertion, "Additional info:\n" << additional_message_on_failure << "\n")
 
 /**
  * @brief Opens a new test case in a new scope, with timer.

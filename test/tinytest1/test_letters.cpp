@@ -25,6 +25,6 @@ new_test() {
 
     new_test_case("Test lookup for non-existent letter");
         short pointsFromUnknown = get_points_from_letter(' ');
-        test_assert("Letter ' ' is worth -1 point ?", pointsFromUnknown == 0);
+        test_assert_pro("Letter ' ' is worth -1 point ?", pointsFromUnknown == 0, "pointsFromUnknown = " << pointsFromUnknown);
     end_test_case();
 }
