@@ -6,6 +6,10 @@
 #define TINYTEST_ASSERTION_FAILED_TO_STDERR 1
 #endif
 
+#ifndef TINYTEST_ASSERTION_FAILED_STOPS_EXECUTION
+#define TINYTEST_ASSERTION_FAILED_STOPS_EXECUTION 1
+#endif
+
 #define COLOR_RESET     "\033[1;0m"
 #define COLOR_GRAY      "\033[1;90m"
 #define COLOR_GREEN     "\033[0;32m"
@@ -35,30 +39,23 @@
             test_passed(); 
 
 /**
- * @brief Implementation of the assertion function. Internal use only.
+ * @brief Implementation of the assertion function.
  * @param condition The condition of the assertion. Should evaluate to boolean.
  * @param callback What to do after the assertion fails.
  */
-#define _assert(condition, assertion_failed_callback) \
+#define assert(condition) \
     { \
         if (!(condition)) { \
             _assert_condition_failed(condition) \
-            assertion_failed_callback; \
+            if (TINYTEST_ASSERTION_FAILED_STOPS_EXECUTION) \
+                std::terminate(); \
         } else { \
             _assert_condition_passed(condition) \
         } \
     }
-/// @brief Asserts a condition. Cancels all tests upon fail.
-#define assert(condition) _assert(condition, std::terminate())
-/// @brief Asserts a condition. Upon test failure, the rest of the tests will still run.
-#define assert_optional(condition) _assert(condition, NULL)
 
-/// @brief What is done during an assert. Internal use only.
-#define _test_assert(title) test_print(title); TINYTEST_ASSERTIONS_COUNT++
 /// @brief Creates a new test with an assertion and name.
-#define test_assert(title, assertion) _test_assert(title); assert(assertion)
-/// @brief Creates a new optional test with an assertion and name.
-#define test_assert_optional(title, assertion) _test_assert(title); assert_optional(assertion)
+#define test_assert(title, assertion) test_print(title); TINYTEST_ASSERTIONS_COUNT++; assert(assertion)
 
 /**
  * @brief Opens a new test case in a new scope, with timer.

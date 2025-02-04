@@ -1,4 +1,5 @@
 #include <tinytest1.hpp>
+#define TINYTEST_ASSERTION_FAILED_STOPS_EXECUTION 0
 
 #include "letters.hpp"
 
@@ -24,6 +25,6 @@ new_test() {
 
     new_test_case("Test lookup for non-existent letter");
         short pointsFromUnknown = get_points_from_letter(' ');
-        test_assert_optional("Letter ' ' is worth -1 point ?", pointsFromUnknown == 0);
+        test_assert("Letter ' ' is worth -1 point ?", pointsFromUnknown == 0);
     end_test_case();
 }
