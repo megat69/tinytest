@@ -37,7 +37,7 @@
 /// @brief Defines what is done after an assertion fails. Internal use only.
 #define _assert_condition_failed(condition, additional_info) \
             test_failed(); \
-            if (TINYTEST_ASSERTION_FAILED_TO_STDERR) \
+            if ((TINYTEST_ASSERTION_FAILED_TO_STDERR && !shorten && verbose) || errorOnly) \
                 std::cerr << _stderr_color(COLOR_RED) << _line() << "\nOn file: " << __FILE__ << " - Line " << _stderr_color(COLOR_MAGENTA) << __LINE__ << "\n" << \
                     _stderr_color(COLOR_RED) << "Assertion failed: `" << _stderr_color(COLOR_YELLOW) << #condition << _stderr_color(COLOR_RED) << "`\n" \
                     << additional_info << _line() << _stderr_color(COLOR_RESET) << std::endl;
@@ -101,10 +101,33 @@
     }
 
 /// @brief Call after creating a new test. Allows the test framework to know whether to be verbose or not.
-#define set_verbose_status() bool verbose = true; \
-    if (argc > 1) { \
-        if (strcmp(argv[1], "silent") || strcmp(argv[1], "quiet")) { \
+#define set_verbose_status() \
+    bool verbose = true; \
+    bool shorten = false; \
+    bool errorOnly = false; \
+    for (int i = 1; i < argc; i++) { \
+        if (strcmp(argv[i], "silent") == 0 || strcmp(argv[i], "quiet") == 0 || strcmp(argv[i], "-q") == 0) { \
             verbose = false; \
+        } \
+        else if (strcmp(argv[i], "verbose") == 0 || strcmp(argv[i], "-v") == 0) { \
+            verbose = true; \
+        } \
+        else if (strcmp(argv[i], "summary") == 0 || strcmp(argv[i], "shorten") == 0 || strcmp(argv[i], "short") == 0 || strcmp(argv[i], "-s") == 0) { \
+            shorten = true; \
+        } \
+        else if (strcmp(argv[i], "errors") == 0 || strcmp(argv[i], "error-only") == 0) { \
+            verbose = false; \
+            errorOnly = true; \
+        } \
+        else if (strcmp(argv[i], "help") == 0 || strcmp(argv[i], "-h") == 0) { \
+            std::cout << "TinyTest CLI arguments :\n" \
+            << "- help, -h :\n\tShows this message\n" \
+            << "- silent, quiet, -q :\n\tDoes not write anything to the standard output\n" \
+            << "- verbose, -v :\n\tWrites to the standad output. Default behaviour.\n" \
+            << "- summary, shorten, short, -s :\n\tRemoves the long details from failed asserts. Failed asserts will only show the 'FAILED' message.\n" \
+            << "- errors, error-only :\n\tONLY shows the long details from failed asserts.\n" \
+            << std::endl; \
+            return 0; \
         } \
     } \
     test_print(COLOR_GRAY << "------------ TESTING FRAMEWORK ------------" << COLOR_RESET)
