@@ -22,36 +22,56 @@
 /// @brief Prints the header for a test
 #define test_header(text) test_print("\n" << COLOR_GRAY << "---- " << text << " ----" << COLOR_RESET)
 
-#define assert_condition_failed(condition) \
+
+/// @brief Defines what is done after an assertion fails. Internal use only.
+#define _assert_condition_failed(condition) \
             test_failed(); \
             if (TINYTEST_ASSERTION_FAILED_TO_STDERR) \
                 std::cerr << "Assertion `" #condition "` failed in " << __FILE__ \
                         << " line " << __LINE__ << std::endl;
-#define assert_condition_passed(condition) \
+/// @brief Defines what is done after an assertion succeeds. Internal use only.
+#define _assert_condition_passed(condition) \
             TINYTEST_TESTS_PASSED_COUNT++; \
             test_passed(); 
 
-#define _assert(condition, callback) \
+/**
+ * @brief Implementation of the assertion function. Internal use only.
+ * @param condition The condition of the assertion. Should evaluate to boolean.
+ * @param callback What to do after the assertion fails.
+ */
+#define _assert(condition, assertion_failed_callback) \
     { \
         if (!(condition)) { \
-            assert_condition_failed(condition) \
-            callback; \
+            _assert_condition_failed(condition) \
+            assertion_failed_callback; \
         } else { \
-            assert_condition_passed(condition) \
+            _assert_condition_passed(condition) \
         } \
     }
+/// @brief Asserts a condition. Cancels all tests upon fail.
 #define assert(condition) _assert(condition, std::terminate())
+/// @brief Asserts a condition. Upon test failure, the rest of the tests will still run.
 #define assert_optional(condition) _assert(condition, NULL)
 
+/// @brief What is done during an assert. Internal use only.
 #define _test_assert(title) test_print(title); TINYTEST_ASSERTIONS_COUNT++
-#define test_assert(title, assertion)          _test_assert(title); assert(assertion)
+/// @brief Creates a new test with an assertion and name.
+#define test_assert(title, assertion) _test_assert(title); assert(assertion)
+/// @brief Creates a new optional test with an assertion and name.
 #define test_assert_optional(title, assertion) _test_assert(title); assert_optional(assertion)
 
+/**
+ * @brief Opens a new test case in a new scope, with timer.
+ * @param test_case_header The name of the test case.
+ */
 #define new_test_case(test_case_header) { \
     test_header(test_case_header); \
     int TINYTEST_ASSERTIONS_COUNT = 0; \
     int TINYTEST_TESTS_PASSED_COUNT = 0; \
     auto TINYTEST_START_TIMING = std::chrono::high_resolution_clock::now()
+/**
+ * @brief Closes a test case and the corresponding scope, and prints out the amount of tests passed, along with timing information.
+ */
 #define end_test_case() auto TINYTEST_STOP_TIMING = std::chrono::high_resolution_clock::now(); \
     auto TINYTEST_TIMING_DURATION = std::chrono::duration_cast<std::chrono::microseconds>(TINYTEST_STOP_TIMING - TINYTEST_START_TIMING); \
     test_print(COLOR_GRAY << "Test completed in " << COLOR_MAGENTA << TINYTEST_TIMING_DURATION.count() << COLOR_GRAY << "µs" << COLOR_RESET); \
@@ -62,6 +82,7 @@
     ); \
     }
 
+/// @brief Call after creating a new test. Allows the test framework to know whether to be verbose or not.
 #define set_verbose_status() bool verbose = true; \
     if (argc > 1) { \
         if (strcmp(argv[1], "silent") || strcmp(argv[1], "quiet")) { \
@@ -70,5 +91,5 @@
     } \
     test_print(COLOR_GRAY << "------------ TESTING FRAMEWORK ------------" << COLOR_RESET)
 
-
+/// @brief Sarts a new test within the test framework. Needs a body.
 #define new_test() int main(int argc, char** argv)
