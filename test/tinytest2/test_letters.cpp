@@ -1,29 +1,28 @@
-#include <tinytest1.hpp>
+#include <tinytest2.hpp>
 
 #include "letters.hpp"
 
+TEST(LookupLettersLowercase) {
+    short pointsFromA = get_points_from_letter('a');
+    ASSERT("Letter 'a' is worth 1 point ?", ASSERT_EQUAL(pointsFromA, 1);)
 
-new_test() {
-    set_verbose_status();
+    short pointsFromZ = get_points_from_letter('z');
+    ASSERT_EQUAL(pointsFromZ, 10);
+}
 
-    new_test_case("Test lookup for letter, lowercase");
-        short pointsFromA = get_points_from_letter('a');
-        test_assert("Letter 'a' is worth 1 point ?", pointsFromA == 1);
+TEST(LookupLettersUppercase) {
+    short pointsFromA = get_points_from_letter('A');
+    ASSERT_EQUAL(pointsFromA, 1);
 
-        short pointsFromZ = get_points_from_letter('z');
-        test_assert("Letter 'z' is worth 10 points ?", pointsFromZ == 10);
-    end_test_case();
+    short pointsFromZ = get_points_from_letter('Z');
+    ASSERT_EQUAL(pointsFromZ, 10);
+}
 
-    new_test_case("Test lookup for letter, uppercase");
-        short pointsFromA = get_points_from_letter('A');
-        test_assert("Letter 'A' is worth 1 point ?", pointsFromA == 1);
+TEST(LookupLettersUnknown) {
+    short pointsFromUnknown = get_points_from_letter(' ');
+    ASSERT_EQUAL(pointsFromUnknown, -1);
+}
 
-        short pointsFromZ = get_points_from_letter('Z');
-        test_assert("Letter 'Z' is worth 10 point ?", pointsFromZ == 10);
-    end_test_case();
-
-    new_test_case("Test lookup for non-existent letter");
-        short pointsFromUnknown = get_points_from_letter(' ');
-        test_assert_optional("Letter ' ' is worth -1 point ?", pointsFromUnknown == 0);
-    end_test_case();
+int main() {
+    Test::runAllTests();
 }
