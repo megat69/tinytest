@@ -10,11 +10,16 @@
 #define TINYTEST_ASSERTION_FAILED_STOPS_EXECUTION 1
 #endif
 
+#ifndef TINYTEST_COLORIZE_STDERR
+#define TINYTEST_COLORIZE_STDERR 1
+#endif
+
 #define COLOR_RESET     "\033[1;0m"
 #define COLOR_GRAY      "\033[1;90m"
 #define COLOR_GREEN     "\033[0;32m"
-#define COLOR_RED       "\033[0;91m"
 #define COLOR_GREEN_B   "\033[0;92m"
+#define COLOR_RED       "\033[0;91m"
+#define COLOR_YELLOW    "\033[1;33m"
 #define COLOR_MAGENTA   "\033[1;95m"
 
 /// @brief Prints the given text if the verbose flag has been set
@@ -27,12 +32,13 @@
 #define test_header(text) test_print("\n" << COLOR_GRAY << "---- " << text << " ----" << COLOR_RESET)
 
 
+#define _stderr_color(tinytest_color) ((TINYTEST_COLORIZE_STDERR) ? tinytest_color : "")
 /// @brief Defines what is done after an assertion fails. Internal use only.
 #define _assert_condition_failed(condition) \
             test_failed(); \
             if (TINYTEST_ASSERTION_FAILED_TO_STDERR) \
-                std::cerr << "Assertion `" #condition "` failed in " << __FILE__ \
-                        << " line " << __LINE__ << std::endl;
+                std::cerr << _stderr_color(COLOR_RED) << "Assertion `" << _stderr_color(COLOR_YELLOW) << #condition << _stderr_color(COLOR_RED) << "` failed in " << __FILE__ \
+                        << " line " << _stderr_color(COLOR_MAGENTA) << __LINE__ << _stderr_color(COLOR_RESET) << std::endl;
 /// @brief Defines what is done after an assertion succeeds. Internal use only.
 #define _assert_condition_passed(condition) \
             TINYTEST_TESTS_PASSED_COUNT++; \

@@ -1,5 +1,5 @@
-#include <tinytest1.hpp>
 #define TINYTEST_ASSERTION_FAILED_STOPS_EXECUTION 0
+#include <tinytest1.hpp>
 
 #include "letters.hpp"
 
