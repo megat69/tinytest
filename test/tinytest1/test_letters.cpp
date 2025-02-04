@@ -17,10 +17,10 @@ new_test() {
 
     new_test_case("Test lookup for letter, uppercase");
         short pointsFromA = get_points_from_letter('A');
-        test_assert("Letter 'A' is worth 1 point ?", pointsFromA == 1);
+        test_assert_var("Letter 'A' is worth 1 point ?", pointsFromA, ==, 1);
 
         short pointsFromZ = get_points_from_letter('Z');
-        test_assert("Letter 'Z' is worth 10 point ?", pointsFromZ == 10);
+        test_assert_var("Letter 'Z' is worth 10 point ?", pointsFromZ, ==, 11);
     end_test_case();
 
     new_test_case("Test lookup for non-existent letter");

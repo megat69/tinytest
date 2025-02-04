@@ -68,6 +68,15 @@
 #define test_assert(title, assertion) _base_test_assert(title); assert(assertion, "")
 /// @brief Creates a new test with an assertion and name, along with something that should be added to the stderr upon failure
 #define test_assert_pro(title, assertion, additional_message_on_failure) _base_test_assert(title); assert(assertion, "Additional info:\n" << additional_message_on_failure << "\n")
+/**
+ * @brief Creates a new test for the value of a variable
+ * @param title The title of this assertion
+ * @param variable The variable whose value is to be tested
+ * @param operation A C++ operator to apply on the variable, e.g. ==
+ * @param value The value to test the variable against
+ * @example test_assert_var("Tests that a is still equal to 1", a, ==, 1)
+ */
+#define test_assert_var(title, variable, operation, value) _base_test_assert(title); assert((variable operation value), "Additional info:\n" << #variable << " = " << variable << "\n")
 
 /**
  * @brief Opens a new test case in a new scope, with timer.
