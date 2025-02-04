@@ -33,12 +33,14 @@
 
 
 #define _stderr_color(tinytest_color) ((TINYTEST_COLORIZE_STDERR) ? tinytest_color : "")
+#define _line() "--------------------------------------------------------------------------------------------------------"
 /// @brief Defines what is done after an assertion fails. Internal use only.
 #define _assert_condition_failed(condition) \
             test_failed(); \
             if (TINYTEST_ASSERTION_FAILED_TO_STDERR) \
-                std::cerr << _stderr_color(COLOR_RED) << "Assertion `" << _stderr_color(COLOR_YELLOW) << #condition << _stderr_color(COLOR_RED) << "` failed in " << __FILE__ \
-                        << " line " << _stderr_color(COLOR_MAGENTA) << __LINE__ << _stderr_color(COLOR_RESET) << std::endl;
+                std::cerr << _stderr_color(COLOR_RED) << _line() << "\nOn file: " << __FILE__ << " - Line " << _stderr_color(COLOR_MAGENTA) << __LINE__ << "\n" << \
+                    _stderr_color(COLOR_RED) << "Assertion failed: `" << _stderr_color(COLOR_YELLOW) << #condition << _stderr_color(COLOR_RED) << "`\n" \
+                    << _line() << _stderr_color(COLOR_RESET) << std::endl;
 /// @brief Defines what is done after an assertion succeeds. Internal use only.
 #define _assert_condition_passed(condition) \
             TINYTEST_TESTS_PASSED_COUNT++; \
