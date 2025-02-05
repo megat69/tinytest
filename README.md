@@ -39,6 +39,25 @@ new_test() {
 }
 ```
 
+Finally, leave a call to the `end_of_all_tests()` function at the very end of your `new_test()` scope.  
+This function should be the last ever "thing" executed by your test program.  
+
+Your code should now look like this :  
+```cpp
+// Your tinytest preprocessor definitions...
+#include <tinytest.hpp>
+
+// Other imports...
+
+new_test() {
+    handle_command_line_args();
+
+    // Many test cases...
+
+    end_of_all_tests();
+}
+```
+
 #### Creating tests
 Create a new test case using the `new_test_case(name)` macro.  
 This will effectively create a new empty scope for you to make your tests.  

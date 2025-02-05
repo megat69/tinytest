@@ -51,4 +51,6 @@ new_test() {
         test_print("If this run, the program will terminate, because WHAT IN THE ACTUAL FUCK");
         std::terminate();
     end_test_case();
+
+    end_of_all_tests();
 }

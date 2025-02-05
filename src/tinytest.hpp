@@ -9,7 +9,7 @@
 #include <string>
 
 /// @brief Current version of TinyTest. Follows [Semantic Versioning](https://semver.org/).
-#define TINYTEST_VERSION "1.3.0"
+#define TINYTEST_VERSION "1.4.0"
 
 #ifndef TINYTEST_ASSERTION_FAILED_TO_STDERR
 /// @brief When an assertion fails, some output gets generated and sent to stderr. Setting this constant to 0 disables this behaviour.
@@ -59,6 +59,7 @@
 #define _line() "--------------------------------------------------------------------------------------------------------"
 /// @brief Defines what is done after an assertion fails. Internal use only.
 #define _assert_condition_failed(condition, additional_info) \
+            TINYTEST_ALL_TESTS_PASSED = false; \
             test_failed(); \
             if ((TINYTEST_ASSERTION_FAILED_TO_STDERR && !shorten && verbose) || errorOnly) \
                 TINYTEST_STANDARD_ERROR << _stderr_color(COLOR_RED) << _line() << "\nOn file: " << __FILE__ << " - Line " << _stderr_color(COLOR_MAGENTA) << __LINE__ << "\n" << \
@@ -192,4 +193,7 @@
     test_print(COLOR_GRAY << "------------ TESTING FRAMEWORK ------------" << COLOR_RESET)
 
 /// @brief Sarts a new test within the test framework. Needs a body.
-#define new_test() int main(int argc, char** argv)
+#define new_test() static bool TINYTEST_ALL_TESTS_PASSED = true; int main(int argc, char** argv)
+
+/// @brief To be called after every test has run. Terminates the testing process with code 0 if all tests passed, and code 1 if at least one test failed.
+#define end_of_all_tests() return (TINYTEST_ALL_TESTS_PASSED) ? 0 : 1
