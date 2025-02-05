@@ -32,12 +32,18 @@ new_test() {
     end_test_case();
 
     new_test_case("Test that will skip");
+        benchmark_start();
+        benchmark_start();
         test_print("This won't skip");
         if (false) {
             test_assert_pro("This will not be run.", false, "HOW DID THIS RUN ??? Apparently false != false ???");
             skip_test_case();
         }
         test_passed();
+        benchmark_stop();
+        benchmark_start();
+        benchmark_stop();
+        benchmark_stop();
 
         test_print("This will now skip");
         skip_test_case();

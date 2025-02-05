@@ -5,9 +5,11 @@
 #include <string.h>
 #include <iostream>
 #include <chrono>
+#include <vector>
+#include <string>
 
 /// @brief Current version of TinyTest. Follows [Semantic Versioning](https://semver.org/).
-#define TINYTEST_VERSION "1.1.0"
+#define TINYTEST_VERSION "1.2.0"
 
 #ifndef TINYTEST_ASSERTION_FAILED_TO_STDERR
 /// @brief When an assertion fails, some output gets generated and sent to stderr. Setting this constant to 0 disables this behaviour.
@@ -99,6 +101,29 @@
     ((microseconds < 1'000) ? "µs" : ((microseconds < 1'000'000) ? "ms" : "s"))
 /** @endcond */
 
+
+/**
+ * @brief Starts a high resolution timer to benchmark your code
+ */
+#define benchmark_start() \
+    TINYTEST_BENCHMARK_VECTORS.push_back(std::chrono::high_resolution_clock::now()); \
+    if (TINYTEST_BENCHMARK_VECTORS.size() != 1) \
+        test_print(COLOR_GRAY << "Benchmark started with id #" << (TINYTEST_BENCHMARK_VECTORS.size() - 1) << COLOR_RESET)
+
+/**
+ * @brief Stops a benchmark and displays the time it took to execute.
+ */
+#define benchmark_stop() { \
+    auto TINYTEST_STOP_TIMING = std::chrono::high_resolution_clock::now(); \
+    int TINYTEST_CURRENT_BENCHMARK = TINYTEST_BENCHMARK_VECTORS.size() - 1; \
+    auto TINYTEST_TIMING_DURATION = std::chrono::duration_cast<std::chrono::microseconds>(TINYTEST_STOP_TIMING - TINYTEST_BENCHMARK_VECTORS[TINYTEST_CURRENT_BENCHMARK]); \
+    test_print(COLOR_GRAY << \
+    ((TINYTEST_CURRENT_BENCHMARK == 0) ? "Test" : "Benchmark id #") << ((TINYTEST_CURRENT_BENCHMARK == 0) ? "" : std::to_string(TINYTEST_CURRENT_BENCHMARK).c_str()) << " completed in " \
+     << COLOR_MAGENTA << _best_time_value(TINYTEST_TIMING_DURATION.count()) << \
+    COLOR_GRAY << _best_time_unit(TINYTEST_TIMING_DURATION.count()) << COLOR_RESET); \
+    TINYTEST_BENCHMARK_VECTORS.pop_back(); \
+}
+
 /**
  * @brief Opens a new test case in a new scope, with timer.
  * @param test_case_header The name of the test case.
@@ -107,14 +132,12 @@
     test_header(test_case_header); \
     int TINYTEST_ASSERTIONS_COUNT = 0; \
     int TINYTEST_TESTS_PASSED_COUNT = 0; \
-    auto TINYTEST_START_TIMING = std::chrono::high_resolution_clock::now()
+    std::vector<std::chrono::_V2::system_clock::time_point> TINYTEST_BENCHMARK_VECTORS; \
+    benchmark_start()
 /**
  * @brief Closes a test case and the corresponding scope, and prints out the amount of tests passed, along with timing information.
  */
-#define end_test_case() auto TINYTEST_STOP_TIMING = std::chrono::high_resolution_clock::now(); \
-    auto TINYTEST_TIMING_DURATION = std::chrono::duration_cast<std::chrono::microseconds>(TINYTEST_STOP_TIMING - TINYTEST_START_TIMING); \
-    test_print(COLOR_GRAY << "Test completed in " << COLOR_MAGENTA << _best_time_value(TINYTEST_TIMING_DURATION.count()) << \
-    COLOR_GRAY << _best_time_unit(TINYTEST_TIMING_DURATION.count()) << COLOR_RESET); \
+#define end_test_case() benchmark_stop(); \
     test_print(COLOR_GRAY << " -> " << \
         ((TINYTEST_TESTS_PASSED_COUNT == TINYTEST_ASSERTIONS_COUNT) ? COLOR_GREEN_B : COLOR_RED) << \
          TINYTEST_TESTS_PASSED_COUNT << "/" << TINYTEST_ASSERTIONS_COUNT << \
