@@ -9,7 +9,7 @@
 #include <string>
 
 /// @brief Current version of TinyTest. Follows [Semantic Versioning](https://semver.org/).
-#define TINYTEST_VERSION "1.6.1"
+#define TINYTEST_VERSION "1.7.0"
 
 #ifndef TINYTEST_ASSERTION_FAILED_TO_STDERR
 /// @brief When an assertion fails, some output gets generated and sent to stderr. Setting this constant to 0 disables this behaviour.
@@ -34,6 +34,11 @@
 #ifndef TINYTEST_STANDARD_ERROR
 /// @brief The stream that will be the standard error output for TinyTest. Should be an std::ostream. Default is std::cerr.
 #define TINYTEST_STANDARD_ERROR std::cerr
+#endif
+
+#ifndef TINYTEST_FLAKY_TEST_ITERATIONS
+/// @brief How many times flaky tests should be run
+#define TINYTEST_FLAKY_TEST_ITERATIONS 10
 #endif
 
 #define COLOR_RESET     "\033[1;0m"
@@ -176,6 +181,31 @@
  * @brief Skips the current test case.
  */
 #define skip_test_case() test_print(COLOR_GRAY << "TEST CASE SKIPPED" << COLOR_RESET); return TINYTEST_SKIP
+
+/**
+ * @brief Creates a new flaky test case in a new scope ; basically, a test that will be run multiple times to check for race conditions and the likes
+ * @param test_case_header The name of the test case.
+ */
+#define new_flaky_test_case(test_case_header) { \
+    int TINYTEST_FLAKY_TEST_PASSES = 0; \
+    int TINYTEST_FLAKY_TEST_SKIPS  = 0; \
+    int TINYTEST_FLAKY_TEST_FAILS  = 0; \
+    for (int TINYTEST_FLAKY_TEST_ITERATION = 0; TINYTEST_FLAKY_TEST_ITERATION < TINYTEST_FLAKY_TEST_ITERATIONS; TINYTEST_FLAKY_TEST_ITERATION++) { \
+        test_print(COLOR_GRAY << "Run " << TINYTEST_FLAKY_TEST_ITERATION << COLOR_RESET); \
+        int TINYTEST_CURRENT_FLAKY_TEST_RESULT = new_test_case(test_case_header)
+
+/**
+ * @brief Closes a flaky test case, and prints out the amount of test cases passed, failed, and skipped
+ */
+#define end_flaky_test_case() end_test_case(); \
+    if (TINYTEST_CURRENT_FLAKY_TEST_RESULT == TINYTEST_PASS) TINYTEST_FLAKY_TEST_PASSES++; \
+    if (TINYTEST_CURRENT_FLAKY_TEST_RESULT == TINYTEST_FAIL) TINYTEST_FLAKY_TEST_FAILS++; \
+    if (TINYTEST_CURRENT_FLAKY_TEST_RESULT == TINYTEST_SKIP) TINYTEST_FLAKY_TEST_SKIPS++; \
+    } \
+    test_print(COLOR_GRAY << "Passed: " << COLOR_GREEN << TINYTEST_FLAKY_TEST_PASSES << "/" << TINYTEST_FLAKY_TEST_ITERATIONS << \
+        COLOR_GRAY << ", Failed: " << COLOR_RED << TINYTEST_FLAKY_TEST_FAILS << "/" << TINYTEST_FLAKY_TEST_ITERATIONS << \
+        COLOR_GRAY << ", Skipped: " << TINYTEST_FLAKY_TEST_FAILS << "/" << TINYTEST_FLAKY_TEST_ITERATIONS << \
+    COLOR_RESET); }
 
 /// @brief Call after creating a new test. Allows the test framework to know whether to be verbose or not.
 #define handle_command_line_args() \
