@@ -1,7 +1,9 @@
 #!/bin/bash
 
+BIN_DIRECTORY="./build"
+
 if [ $# -eq 0 ]; then
-  EXECUTABLE=test_letters
+  EXECUTABLE=test_tinytest1
 else
   EXECUTABLE=$1
   shift
@@ -12,7 +14,7 @@ FAILURE_COLOR='\033[0;31m'
 NEUTRAL_COLOR='\033[0;33m'
 NO_COLOR='\033[0m'
 echo -e "${USUAL_COLOR}Running project...${NO_COLOR}"
-"./build/$EXECUTABLE" $@
+"$BIN_DIRECTORY/$EXECUTABLE" $@
 EXIT_CODE=$?
 if [ $EXIT_CODE == 0 ]
 then
