@@ -1,7 +1,7 @@
 #!/bin/bash
 
 CleanBinaries() {
-    rm -f ./build/test_liste
+    rm -f ./build/test_*
     echo "Cleaned binaries"
 }
 
