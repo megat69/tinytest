@@ -9,7 +9,7 @@
 #include <string>
 
 /// @brief Current version of TinyTest. Follows [Semantic Versioning](https://semver.org/).
-#define TINYTEST_VERSION "1.4.0"
+#define TINYTEST_VERSION "1.4.1"
 
 #ifndef TINYTEST_ASSERTION_FAILED_TO_STDERR
 /// @brief When an assertion fails, some output gets generated and sent to stderr. Setting this constant to 0 disables this behaviour.
@@ -190,7 +190,7 @@
             return 0; \
         } \
     } \
-    test_print(COLOR_GRAY << "------------ TESTING FRAMEWORK ------------" << COLOR_RESET)
+    test_print(COLOR_GRAY << "------------ TinyTest Results ------------" << COLOR_RESET)
 
 /// @brief Sarts a new test within the test framework. Needs a body.
 #define new_test() static bool TINYTEST_ALL_TESTS_PASSED = true; int main(int argc, char** argv)
