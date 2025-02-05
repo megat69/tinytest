@@ -9,7 +9,7 @@
 #include <string>
 
 /// @brief Current version of TinyTest. Follows [Semantic Versioning](https://semver.org/).
-#define TINYTEST_VERSION "1.2.1"
+#define TINYTEST_VERSION "1.3.0"
 
 #ifndef TINYTEST_ASSERTION_FAILED_TO_STDERR
 /// @brief When an assertion fails, some output gets generated and sent to stderr. Setting this constant to 0 disables this behaviour.
@@ -26,6 +26,16 @@
 #define TINYTEST_COLORIZE_STDERR 1
 #endif
 
+#ifndef TINYTEST_STANDARD_OUTPUT
+/// @brief The stream that will be the standard output for TinyTest. Should be an std::ostream. Default is std::cout.
+#define TINYTEST_STANDARD_OUTPUT std::cout
+#endif
+
+#ifndef TINYTEST_STANDARD_ERROR
+/// @brief The stream that will be the standard error output for TinyTest. Should be an std::ostream. Default is std::cerr.
+#define TINYTEST_STANDARD_ERROR std::cerr
+#endif
+
 #define COLOR_RESET     "\033[1;0m"
 #define COLOR_GRAY      "\033[1;90m"
 #define COLOR_GREEN     "\033[0;32m"
@@ -35,7 +45,7 @@
 #define COLOR_MAGENTA   "\033[1;95m"
 
 /// @brief Prints the given text if the verbose flag has been set
-#define test_print(text) if (verbose) std::cout << text << std::endl
+#define test_print(text) if (verbose) TINYTEST_STANDARD_OUTPUT << text << std::endl
 /// @brief Prints that the test has passed
 #define test_passed() test_print("\t" << COLOR_GREEN << "OK" << COLOR_RESET)
 /// @brief Prints that the test has failed
@@ -51,7 +61,7 @@
 #define _assert_condition_failed(condition, additional_info) \
             test_failed(); \
             if ((TINYTEST_ASSERTION_FAILED_TO_STDERR && !shorten && verbose) || errorOnly) \
-                std::cerr << _stderr_color(COLOR_RED) << _line() << "\nOn file: " << __FILE__ << " - Line " << _stderr_color(COLOR_MAGENTA) << __LINE__ << "\n" << \
+                TINYTEST_STANDARD_ERROR << _stderr_color(COLOR_RED) << _line() << "\nOn file: " << __FILE__ << " - Line " << _stderr_color(COLOR_MAGENTA) << __LINE__ << "\n" << \
                     _stderr_color(COLOR_RED) << "Assertion failed: `" << _stderr_color(COLOR_YELLOW) << #condition << _stderr_color(COLOR_RED) << "`\n" \
                     << additional_info << _line() << _stderr_color(COLOR_RESET) << std::endl;
 /// @brief Defines what is done after an assertion succeeds. Internal use only.
