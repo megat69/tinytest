@@ -7,7 +7,7 @@
 #include <chrono>
 
 /// @brief Current version of TinyTest. Follows [Semantic Versioning](https://semver.org/).
-#define TINYTEST_VERSION "1.0.0"
+#define TINYTEST_VERSION "1.1.0"
 
 #ifndef TINYTEST_ASSERTION_FAILED_TO_STDERR
 /// @brief When an assertion fails, some output gets generated and sent to stderr. Setting this constant to 0 disables this behaviour.
@@ -103,7 +103,7 @@
  * @brief Opens a new test case in a new scope, with timer.
  * @param test_case_header The name of the test case.
  */
-#define new_test_case(test_case_header) { \
+#define new_test_case(test_case_header) [&](){ \
     test_header(test_case_header); \
     int TINYTEST_ASSERTIONS_COUNT = 0; \
     int TINYTEST_TESTS_PASSED_COUNT = 0; \
@@ -120,7 +120,7 @@
          TINYTEST_TESTS_PASSED_COUNT << "/" << TINYTEST_ASSERTIONS_COUNT << \
         COLOR_GRAY << " tests passed." << COLOR_RESET \
     ); \
-    }
+    }()
 
 /// @brief Call after creating a new test. Allows the test framework to know whether to be verbose or not.
 #define handle_command_line_args() \
