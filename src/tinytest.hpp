@@ -9,7 +9,7 @@
 #include <string>
 
 /// @brief Current version of TinyTest. Follows [Semantic Versioning](https://semver.org/).
-#define TINYTEST_VERSION "1.6.0"
+#define TINYTEST_VERSION "1.6.1"
 
 #ifndef TINYTEST_ASSERTION_FAILED_TO_STDERR
 /// @brief When an assertion fails, some output gets generated and sent to stderr. Setting this constant to 0 disables this behaviour.
@@ -142,6 +142,7 @@
 /**
  * @brief Starts a "long" benchmark with many iterations of a code block to give more accurate benchmarking results
  * @param iterations The amount of iterations to benchmark
+ * @warning DO NOT PLACE A LONG BENCHMARK WITHIN ANOTHER LONG BENCHMARK ! This will create an infinite loop !
  */
 #define benchmark_long_start(iterations) benchmark_start(); for (long long TINYTEST_BENCHMARK_I = 0; TINYTEST_BENCHMARK_I < iterations; TINYTEST_BENCHMARK_I++) {
 
