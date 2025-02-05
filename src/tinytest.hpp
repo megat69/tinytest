@@ -9,7 +9,7 @@
 #include <string>
 
 /// @brief Current version of TinyTest. Follows [Semantic Versioning](https://semver.org/).
-#define TINYTEST_VERSION "1.5.0"
+#define TINYTEST_VERSION "1.6.0"
 
 #ifndef TINYTEST_ASSERTION_FAILED_TO_STDERR
 /// @brief When an assertion fails, some output gets generated and sent to stderr. Setting this constant to 0 disables this behaviour.
@@ -43,6 +43,10 @@
 #define COLOR_RED       "\033[0;91m"
 #define COLOR_YELLOW    "\033[1;33m"
 #define COLOR_MAGENTA   "\033[1;95m"
+
+#define TINYTEST_SKIP -1
+#define TINYTEST_FAIL  0
+#define TINYTEST_PASS  1
 
 /// @brief Prints the given text if the verbose flag has been set
 #define test_print(text) if (verbose) TINYTEST_STANDARD_OUTPUT << text << std::endl
@@ -165,11 +169,12 @@
          TINYTEST_TESTS_PASSED_COUNT << "/" << TINYTEST_ASSERTIONS_COUNT << \
         COLOR_GRAY << " tests passed." << COLOR_RESET \
     ); \
+    return (TINYTEST_TESTS_PASSED_COUNT == TINYTEST_ASSERTIONS_COUNT) ? TINYTEST_PASS : TINYTEST_FAIL ; \
     }()
 /**
  * @brief Skips the current test case.
  */
-#define skip_test_case() test_print(COLOR_GRAY << "TEST CASE SKIPPED" << COLOR_RESET); return
+#define skip_test_case() test_print(COLOR_GRAY << "TEST CASE SKIPPED" << COLOR_RESET); return TINYTEST_SKIP
 
 /// @brief Call after creating a new test. Allows the test framework to know whether to be verbose or not.
 #define handle_command_line_args() \
