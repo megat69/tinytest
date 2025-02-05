@@ -9,7 +9,7 @@
 #include <string>
 
 /// @brief Current version of TinyTest. Follows [Semantic Versioning](https://semver.org/).
-#define TINYTEST_VERSION "1.2.0"
+#define TINYTEST_VERSION "1.2.1"
 
 #ifndef TINYTEST_ASSERTION_FAILED_TO_STDERR
 /// @brief When an assertion fails, some output gets generated and sent to stderr. Setting this constant to 0 disables this behaviour.
@@ -111,7 +111,7 @@
         test_print(COLOR_GRAY << "Benchmark started with id #" << (TINYTEST_BENCHMARK_VECTORS.size() - 1) << COLOR_RESET)
 
 /**
- * @brief Stops a benchmark and displays the time it took to execute.
+ * @brief Stops the current benchmark and displays the time it took to execute
  */
 #define benchmark_stop() { \
     auto TINYTEST_STOP_TIMING = std::chrono::high_resolution_clock::now(); \
