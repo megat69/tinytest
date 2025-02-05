@@ -107,11 +107,11 @@ local_version = [int(n) for n in tinytest_local_version_number.split('.')]
 online_version = [int(n) for n in tinytest_online_version_number.split('.')]
 
 do_upgrade: bool = False
-if upgrade_type == UpgradeType.patch and local_version[0] == online_version[0] and local_version[1] == online_version[1] and local_version[2] != online_version[2]:
+if upgrade_type == UpgradeType.patch and local_version[0] == online_version[0] and local_version[1] == online_version[1] and local_version[2] < online_version[2]:
     do_upgrade = True
-elif upgrade_type == UpgradeType.minor and local_version[0] == online_version[0] and (local_version[1] != online_version[1] or local_version[2] != online_version[2]):
+elif upgrade_type == UpgradeType.minor and local_version[0] == online_version[0] and (local_version[1] < online_version[1] or local_version[2] < online_version[2]):
     do_upgrade = True
-elif upgrade_type == UpgradeType.major and (local_version[0] != online_version[0] or local_version[1] != online_version[1] or local_version[2] != online_version[2]):
+elif upgrade_type == UpgradeType.major and (local_version[0] < online_version[0] or local_version[1] < online_version[1] or local_version[2] < online_version[2]):
     do_upgrade = True
 
 if not do_upgrade:
