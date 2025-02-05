@@ -52,5 +52,13 @@ new_test() {
         std::terminate();
     end_test_case();
 
+    new_test_case("Long benchmark");
+        constexpr long long ITERATIONS = 4'000'000;
+        test_print("Benchmarks how long it takes to call the `get_points_from_letter()` function " << ITERATIONS << " times.");
+        benchmark_long_start(ITERATIONS);
+            get_points_from_letter(ITERATIONS % 26);
+        benchmark_long_stop();
+    end_test_case();
+
     end_of_all_tests();
 }

@@ -9,7 +9,7 @@
 #include <string>
 
 /// @brief Current version of TinyTest. Follows [Semantic Versioning](https://semver.org/).
-#define TINYTEST_VERSION "1.4.1"
+#define TINYTEST_VERSION "1.5.0"
 
 #ifndef TINYTEST_ASSERTION_FAILED_TO_STDERR
 /// @brief When an assertion fails, some output gets generated and sent to stderr. Setting this constant to 0 disables this behaviour.
@@ -134,6 +134,17 @@
     COLOR_GRAY << _best_time_unit(TINYTEST_TIMING_DURATION.count()) << COLOR_RESET); \
     TINYTEST_BENCHMARK_VECTORS.pop_back(); \
 }
+
+/**
+ * @brief Starts a "long" benchmark with many iterations of a code block to give more accurate benchmarking results
+ * @param iterations The amount of iterations to benchmark
+ */
+#define benchmark_long_start(iterations) benchmark_start(); for (long long TINYTEST_BENCHMARK_I = 0; TINYTEST_BENCHMARK_I < iterations; TINYTEST_BENCHMARK_I++) {
+
+/**
+ * @brief Marks the end of a "long" benchmark created with the `benchmark_long_start()` macro
+ */
+#define benchmark_long_stop() } benchmark_stop()
 
 /**
  * @brief Opens a new test case in a new scope, with timer.
