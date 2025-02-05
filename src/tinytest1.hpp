@@ -78,6 +78,11 @@
  */
 #define test_assert_var(title, variable, operation, value) _base_test_assert(title); assert((variable operation value), "Additional info:\n" << #variable << " = " << variable << "\n")
 
+#define _best_time_value(microseconds) \
+    ((microseconds < 1'000) ? microseconds : ((microseconds < 1'000'000) ? (microseconds / 1'000) : (microseconds / 1'000'000)))
+#define _best_time_unit(microseconds) \
+    ((microseconds < 1'000) ? "µs" : ((microseconds < 1'000'000) ? "ms" : "s"))
+
 /**
  * @brief Opens a new test case in a new scope, with timer.
  * @param test_case_header The name of the test case.
@@ -92,7 +97,8 @@
  */
 #define end_test_case() auto TINYTEST_STOP_TIMING = std::chrono::high_resolution_clock::now(); \
     auto TINYTEST_TIMING_DURATION = std::chrono::duration_cast<std::chrono::microseconds>(TINYTEST_STOP_TIMING - TINYTEST_START_TIMING); \
-    test_print(COLOR_GRAY << "Test completed in " << COLOR_MAGENTA << TINYTEST_TIMING_DURATION.count() << COLOR_GRAY << "µs" << COLOR_RESET); \
+    test_print(COLOR_GRAY << "Test completed in " << COLOR_MAGENTA << _best_time_value(TINYTEST_TIMING_DURATION.count()) << \
+    COLOR_GRAY << _best_time_unit(TINYTEST_TIMING_DURATION.count()) << COLOR_RESET); \
     test_print(COLOR_GRAY << " -> " << \
         ((TINYTEST_TESTS_PASSED_COUNT == TINYTEST_ASSERTIONS_COUNT) ? COLOR_GREEN_B : COLOR_RED) << \
          TINYTEST_TESTS_PASSED_COUNT << "/" << TINYTEST_ASSERTIONS_COUNT << \
