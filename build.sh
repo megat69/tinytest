@@ -51,6 +51,8 @@ do
             sed -i "s/set(CMAKE_BUILD_TYPE [A-Za-z]*)/set(CMAKE_BUILD_TYPE Release)/" CMakeLists.txt ;;
         debug)
             sed -i "s/set(CMAKE_BUILD_TYPE [A-Za-z]*)/set(CMAKE_BUILD_TYPE Debug)/" CMakeLists.txt ;;
+        doc*)
+            sed -i "s/set(COMPILE_DOXYGEN OFF)/set(COMPILE_DOXYGEN ON)/" CMakeLists.txt ;;
         clean)
             ./clean.sh build bin ;;
         *) 

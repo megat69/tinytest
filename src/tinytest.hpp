@@ -1,16 +1,23 @@
+/**
+ * @file TinyTest, a stupidly simple C++ testing framework, being made as a single header of only macros.
+ */
+#pragma once
 #include <string.h>
 #include <iostream>
 #include <chrono>
 
 #ifndef TINYTEST_ASSERTION_FAILED_TO_STDERR
+/// @brief When an assertion fails, some output gets generated and sent to stderr. Setting this constant to 0 disables this behaviour.
 #define TINYTEST_ASSERTION_FAILED_TO_STDERR 1
 #endif
 
 #ifndef TINYTEST_ASSERTION_FAILED_STOPS_EXECUTION
+/// @brief As soon as an assertion fails, execution gets stopped. Setting this constant to 0 disables this behaviour.
 #define TINYTEST_ASSERTION_FAILED_STOPS_EXECUTION 1
 #endif
 
 #ifndef TINYTEST_COLORIZE_STDERR
+/// @brief Whether or not to colorize the stderr output.
 #define TINYTEST_COLORIZE_STDERR 1
 #endif
 
@@ -32,6 +39,7 @@
 #define test_header(text) test_print("\n" << COLOR_GRAY << "---- " << text << " ----" << COLOR_RESET)
 
 
+/** @cond PRIVATE */
 #define _stderr_color(tinytest_color) ((TINYTEST_COLORIZE_STDERR) ? tinytest_color : "")
 #define _line() "--------------------------------------------------------------------------------------------------------"
 /// @brief Defines what is done after an assertion fails. Internal use only.
@@ -45,11 +53,12 @@
 #define _assert_condition_passed(condition) \
             TINYTEST_TESTS_PASSED_COUNT++; \
             test_passed(); 
+/** @endcond */
 
 /**
  * @brief Implementation of the assertion function.
  * @param condition The condition of the assertion. Should evaluate to boolean.
- * @param callback What to do after the assertion fails.
+ * @param additional_message_on_failure What to do after the assertion fails.
  */
 #define assert(condition, additional_message_on_failure) \
     { \
@@ -62,8 +71,10 @@
         } \
     }
 
+/** @cond PRIVATE */
 /// @brief Internal use only. Gets called by test_assert and test_assert_pro.
 #define _base_test_assert(title) test_print(title); TINYTEST_ASSERTIONS_COUNT++
+/** @endcond */
 /// @brief Creates a new test with an assertion and name.
 #define test_assert(title, assertion) _base_test_assert(title); assert(assertion, "")
 /// @brief Creates a new test with an assertion and name, along with something that should be added to the stderr upon failure
@@ -74,14 +85,16 @@
  * @param variable The variable whose value is to be tested
  * @param operation A C++ operator to apply on the variable, e.g. ==
  * @param value The value to test the variable against
- * @example test_assert_var("Tests that a is still equal to 1", a, ==, 1)
+ * test_assert_var("Tests that a is still equal to 1", a, ==, 1)
  */
 #define test_assert_var(title, variable, operation, value) _base_test_assert(title); assert((variable operation value), "Additional info:\n" << #variable << " = " << variable << "\n")
 
+/** @cond PRIVATE */
 #define _best_time_value(microseconds) \
     ((microseconds < 1'000) ? microseconds : ((microseconds < 1'000'000) ? (microseconds / 1'000) : (microseconds / 1'000'000)))
 #define _best_time_unit(microseconds) \
     ((microseconds < 1'000) ? "µs" : ((microseconds < 1'000'000) ? "ms" : "s"))
+/** @endcond */
 
 /**
  * @brief Opens a new test case in a new scope, with timer.
