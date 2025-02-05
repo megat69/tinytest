@@ -121,6 +121,10 @@
         COLOR_GRAY << " tests passed." << COLOR_RESET \
     ); \
     }()
+/**
+ * @brief Skips the current test case.
+ */
+#define skip_test_case() test_print(COLOR_GRAY << "TEST CASE SKIPPED" << COLOR_RESET); return
 
 /// @brief Call after creating a new test. Allows the test framework to know whether to be verbose or not.
 #define handle_command_line_args() \

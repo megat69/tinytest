@@ -30,4 +30,19 @@ new_test() {
         short pointsFromUnknown = get_points_from_letter(' ');
         test_assert_pro("Letter ' ' is worth -1 point ?", pointsFromUnknown == 0, "pointsFromUnknown = " << pointsFromUnknown);
     end_test_case();
+
+    new_test_case("Test that will skip");
+        test_print("This won't skip");
+        if (false) {
+            test_assert_pro("This will not be run.", false, "HOW DID THIS RUN ??? Apparently false != false ???");
+            skip_test_case();
+        }
+        test_passed();
+
+        test_print("This will now skip");
+        skip_test_case();
+
+        test_print("If this run, the program will terminate, because WHAT IN THE ACTUAL FUCK");
+        std::terminate();
+    end_test_case();
 }
