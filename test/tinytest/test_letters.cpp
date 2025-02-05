@@ -1,4 +1,5 @@
 #define TINYTEST_ASSERTION_FAILED_STOPS_EXECUTION 0
+#define TINYTEST_FLAKY_TEST_ITERATIONS 3
 #include <tinytest.hpp>
 
 #include "letters.hpp"
@@ -59,6 +60,24 @@ new_test() {
             get_points_from_letter(ITERATIONS % 26);
         benchmark_long_stop();
     end_test_case();
+
+    srand(time(NULL));
+    new_flaky_test_case("Flaky tests !");
+        int randomChosenInt = rand() % 3;
+        switch (randomChosenInt)
+        {
+        case 0:
+            test_assert("", true);
+            break;
+        case 1:
+            test_assert("", false);
+            break;
+        case 2:
+        default:
+            skip_test_case();
+            break;
+        }
+    end_flaky_test_case();
 
     end_of_all_tests();
 }

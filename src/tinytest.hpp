@@ -66,6 +66,7 @@
 /** @cond PRIVATE */
 #define _stderr_color(tinytest_color) ((TINYTEST_COLORIZE_STDERR) ? tinytest_color : "")
 #define _line() "--------------------------------------------------------------------------------------------------------"
+#define _small_line() "--------------------------------------------------------------"
 /// @brief Defines what is done after an assertion fails. Internal use only.
 #define _assert_condition_failed(condition, additional_info) \
             TINYTEST_ALL_TESTS_PASSED = false; \
@@ -187,12 +188,12 @@
  * @param test_case_header The name of the test case.
  */
 #define new_flaky_test_case(test_case_header) { \
-    int TINYTEST_FLAKY_TEST_PASSES = 0; \
-    int TINYTEST_FLAKY_TEST_SKIPS  = 0; \
-    int TINYTEST_FLAKY_TEST_FAILS  = 0; \
+    test_print(COLOR_GRAY << "\n\n-------------- NEW FLAKY TEST : " << test_case_header << " --------------" << COLOR_RESET); \
+    static int TINYTEST_FLAKY_TEST_PASSES = 0; \
+    static int TINYTEST_FLAKY_TEST_FAILS  = 0; \
+    static int TINYTEST_FLAKY_TEST_SKIPS  = 0; \
     for (int TINYTEST_FLAKY_TEST_ITERATION = 0; TINYTEST_FLAKY_TEST_ITERATION < TINYTEST_FLAKY_TEST_ITERATIONS; TINYTEST_FLAKY_TEST_ITERATION++) { \
-        test_print(COLOR_GRAY << "Run " << TINYTEST_FLAKY_TEST_ITERATION << COLOR_RESET); \
-        int TINYTEST_CURRENT_FLAKY_TEST_RESULT = new_test_case(test_case_header)
+        int TINYTEST_CURRENT_FLAKY_TEST_RESULT = new_test_case("Flaky Test Run " << TINYTEST_FLAKY_TEST_ITERATION + 1)
 
 /**
  * @brief Closes a flaky test case, and prints out the amount of test cases passed, failed, and skipped
@@ -202,9 +203,9 @@
     if (TINYTEST_CURRENT_FLAKY_TEST_RESULT == TINYTEST_FAIL) TINYTEST_FLAKY_TEST_FAILS++; \
     if (TINYTEST_CURRENT_FLAKY_TEST_RESULT == TINYTEST_SKIP) TINYTEST_FLAKY_TEST_SKIPS++; \
     } \
-    test_print(COLOR_GRAY << "Passed: " << COLOR_GREEN << TINYTEST_FLAKY_TEST_PASSES << "/" << TINYTEST_FLAKY_TEST_ITERATIONS << \
+    test_print(COLOR_GRAY << "\n\n" << _small_line() << "\n\tPassed: " << COLOR_GREEN << TINYTEST_FLAKY_TEST_PASSES << "/" << TINYTEST_FLAKY_TEST_ITERATIONS << \
         COLOR_GRAY << ", Failed: " << COLOR_RED << TINYTEST_FLAKY_TEST_FAILS << "/" << TINYTEST_FLAKY_TEST_ITERATIONS << \
-        COLOR_GRAY << ", Skipped: " << TINYTEST_FLAKY_TEST_FAILS << "/" << TINYTEST_FLAKY_TEST_ITERATIONS << \
+        COLOR_GRAY << ", Skipped: " << TINYTEST_FLAKY_TEST_SKIPS << "/" << TINYTEST_FLAKY_TEST_ITERATIONS << \
     COLOR_RESET); }
 
 /// @brief Call after creating a new test. Allows the test framework to know whether to be verbose or not.
