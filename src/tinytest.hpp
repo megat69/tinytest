@@ -107,7 +107,7 @@
     }
 
 /// @brief Call after creating a new test. Allows the test framework to know whether to be verbose or not.
-#define set_verbose_status() \
+#define handle_command_line_args() \
     bool verbose = true; \
     bool shorten = false; \
     bool errorOnly = false; \

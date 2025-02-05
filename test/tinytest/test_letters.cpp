@@ -6,7 +6,7 @@
 
 
 new_test() {
-    set_verbose_status();
+    handle_command_line_args();
 
     new_test_case("Test lookup for letter, lowercase");
         short pointsFromA = get_points_from_letter('a');
