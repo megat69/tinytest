@@ -20,7 +20,8 @@ new_test() {
     new_test_case("Test lookup for letter, uppercase");
         short pointsFromA = get_points_from_letter('A');
         test_assert_var("Letter 'A' is worth 1 point ?", pointsFromA, ==, 1);
-        
+
+        test_warning("This test has been artificially lengthened to test the benchmarking system.");
         std::this_thread::sleep_for(std::chrono::milliseconds(5));
 
         short pointsFromZ = get_points_from_letter('Z');
