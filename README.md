@@ -77,6 +77,8 @@ new_test() {
     new_test_case("My new test case");
         // Your tests here
     end_test_case();
+
+    end_of_all_tests();
 }
 ```
 
@@ -110,5 +112,7 @@ new_test() {
         a++;
         test_assert_pro("Checking evenness of a", a % 2 == 0, "Variable a is not even, since a = " << a);
     end_test_case();
+
+    end_of_all_tests();
 }
 ```
