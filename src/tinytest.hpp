@@ -9,7 +9,7 @@
 #include <string>
 
 /// @brief Current version of TinyTest. Follows [Semantic Versioning](https://semver.org/).
-#define TINYTEST_VERSION "1.8.1"
+#define TINYTEST_VERSION "1.8.2"
 
 #ifndef TINYTEST_ASSERTION_FAILED_TO_STDERR
 /// @brief When an assertion fails, some output gets generated and sent to stderr. Setting this constant to 0 disables this behaviour.
@@ -134,7 +134,7 @@
     }
 
 /// @brief Creates a new test, with an expression that is supposed to throw an error
-#define test_assert_throws(title, expression) test_assert_pro(title, expression, "The assertion did not throw any exception.\n")
+#define test_assert_throws(title, expression) test_assert_throws(title, expression, "The assertion did not throw any exception.\n")
 
 /** @cond PRIVATE */
 #define _best_time_value(microseconds) \
