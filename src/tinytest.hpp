@@ -9,7 +9,7 @@
 #include <string>
 
 /// @brief Current version of TinyTest. Follows [Semantic Versioning](https://semver.org/).
-#define TINYTEST_VERSION "1.8.0"
+#define TINYTEST_VERSION "1.8.1"
 
 #ifndef TINYTEST_ASSERTION_FAILED_TO_STDERR
 /// @brief When an assertion fails, some output gets generated and sent to stderr. Setting this constant to 0 disables this behaviour.
@@ -115,8 +115,8 @@
  */
 #define test_assert_var(title, variable, operation, value) _base_test_assert(title); assert((variable operation value), "Additional info:\n" << #variable << " = " << variable << "\n")
 
-/// @brief Creates a new test, with an expression that is supposed to throw an error
-#define test_assert_throws(title, expression) _base_test_assert(title); \
+/// @brief Creates a new test, with an expression that is supposed to throw an error. Provides the ability to send an error message
+#define test_assert_throws_pro(title, expression, message_on_failure) _base_test_assert(title); \
     { \
         bool TINYTEST_ASSERT_THROWS_PASSED = false; \
         try { \
@@ -127,11 +127,14 @@
         if (TINYTEST_ASSERT_THROWS_PASSED) { \
             _assert_condition_passed(expression); \
         } else { \
-            _assert_condition_failed(expression, "The assertion did not throw any exception.\n"); \
+            _assert_condition_failed(expression, message_on_failure << "\n"); \
             if (TINYTEST_ASSERTION_FAILED_STOPS_EXECUTION) \
                 std::terminate(); \
         } \
     }
+
+/// @brief Creates a new test, with an expression that is supposed to throw an error
+#define test_assert_throws(title, expression) test_assert_pro(title, expression, "The assertion did not throw any exception.\n")
 
 /** @cond PRIVATE */
 #define _best_time_value(microseconds) \
