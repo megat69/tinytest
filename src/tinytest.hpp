@@ -9,7 +9,7 @@
 #include <string>
 
 /// @brief Current version of TinyTest. Follows [Semantic Versioning](https://semver.org/).
-#define TINYTEST_VERSION "1.9.0"
+#define TINYTEST_VERSION "1.9.1"
 
 #ifndef TINYTEST_ASSERTION_FAILED_TO_STDERR
 /// @brief When an assertion fails, some output gets generated and sent to stderr. Setting this constant to 0 disables this behaviour.
@@ -115,7 +115,13 @@
  */
 #define test_assert_var(title, variable, operation, value) _base_test_assert(title); assert((variable operation value), "Additional info:\n" << #variable << " = " << variable << "\n")
 
-/// @brief Creates a new test, with an expression that is supposed to throw an error. Provides the ability to send an error message
+/**
+ * @brief Creates a new test, with an expression that is supposed to throw an exception. Allows to specify which exception, and provide an error message.
+ * @param title The title of this assertion
+ * @param expression An expression that is supposed to throw an exception
+ * @param exception_type A subclass of std::exception (or itself). e.g. std::out_of_bounds
+ * @param message_on_failure A message to be displayed if the assertion fails
+*/
 #define test_assert_throws_pro_ex(title, expression, exception_type, message_on_failure) _base_test_assert(title); \
     { \
         bool TINYTEST_ASSERT_THROWS_PASSED = false; \
