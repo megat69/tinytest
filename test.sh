@@ -6,26 +6,39 @@ NEUTRAL_COLOR='\033[0;33m'
 NO_COLOR='\033[0m'
 
 BIN_DIRECTORY="./build"
+TEST_ARGUMENTS=""  # Arguments to pass on to each test binary, such as -q, -s, or error-only
 
 if [ $# -eq 0 ]; then
-    echo -e "${FAILURE_COLOR}No test executable name to test provided.${NO_COLOR}"
-    exit 1
+    ALL_EXECUTABLES_TEMP="$(find build/ -maxdepth 1 -type f -name "test_*")"
+    ALL_EXECUTABLES=""
+    for EXECUTABLE in $ALL_EXECUTABLES_TEMP
+    do
+        ALL_EXECUTABLES="${ALL_EXECUTABLES} ${EXECUTABLE#"${BIN_DIRECTORY#./}/test_"}"
+    done
+
+    if [ -z $ALL_EXECUTABLES ]; then
+        echo -e "${FAILURE_COLOR}No test executable name to test provided, and none in test folder.${NO_COLOR}"
+        exit 1
+    fi
+else
+    ALL_EXECUTABLES="$@"
 fi
 
-if [ $1 == "-h" ]; then
+if [ $1 = "-h" ]; then
     echo -e "Runs through each provided test."
     echo -e "Tests are provided through command line arguments, being the name of any test executable, minus the 'test_' prefix.\n"
     echo -e "Example : ./tests.sh tinytest1"
     echo -e "\tWill run the executable '$BIN_DIRECTORY/test_tinytest1'"
+    echo -e "If no name is provided, will run every test in the test directory."
     exit 0
 fi
 
 # Goes through each test provided through the command line
-for EXECUTABLE in "$@"
+for EXECUTABLE in $ALL_EXECUTABLES
 do
     # Runs the test
     echo -e "${USUAL_COLOR}Running tests of project '${NEUTRAL_COLOR}${EXECUTABLE}${USUAL_COLOR}'${NO_COLOR}"
-    "$BIN_DIRECTORY/test_$EXECUTABLE" $@
+    "$BIN_DIRECTORY/test_$EXECUTABLE" $TEST_ARGUMENTS
     EXIT_CODE=$?
     if [ $EXIT_CODE == 0 ]
     then
