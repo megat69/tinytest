@@ -53,6 +53,10 @@ new_test() {
         std::terminate();
     end_test_case();
 
+    new_test_case("Assertions that an exception will occur");
+        test_assert_throws("Test that throws", throw std::exception());
+    end_test_case();
+
     new_test_case("Long benchmark");
         constexpr long long ITERATIONS = 4'000'000;
         test_print("Benchmarks how long it takes to call the `get_points_from_letter()` function " << ITERATIONS << " times.");
