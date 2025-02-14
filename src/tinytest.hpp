@@ -270,12 +270,17 @@
         else if (strcmp(argv[i], "help") == 0 || strcmp(argv[i], "-h") == 0) { \
             std::cout << "TinyTest CLI arguments :\n" \
             << "- help, -h :\n\tShows this message\n" \
+            << "- version :\n\tShows the current TinyTest version\n" \
             << "- silent, quiet, -q :\n\tDoes not write anything to the standard output\n" \
             << "- verbose, -v :\n\tWrites to the standad output. Default behaviour.\n" \
             << "- summary, shorten, short, -s :\n\tRemoves the long details from failed asserts. Failed asserts will only show the 'FAILED' message.\n" \
             << "- errors, error-only, -e :\n\tONLY shows the long details from failed asserts.\n" \
             << "- important-only, important, -i :\n\tOnly shows test case names and statuses ; a.k.a the most important stuff. Helps summarize in case of long tests.\n" \
             << std::endl; \
+            return 0; \
+        } \
+        else if (strcmp(argv[i], "version") == 0 || strcmp(argv[i], "--version") == 0) { \
+            std::cout << "TinyTest version " << TINYTEST_VERSION << std::endl; \
             return 0; \
         } \
     } \
