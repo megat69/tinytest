@@ -9,7 +9,7 @@
 #include <string>
 
 /// @brief Current version of TinyTest. Follows [Semantic Versioning](https://semver.org/).
-#define TINYTEST_VERSION "1.10.0"
+#define TINYTEST_VERSION "1.10.1"
 
 #ifndef TINYTEST_ASSERTION_FAILED_TO_STDERR
 /// @brief When an assertion fails, some output gets generated and sent to stderr. Setting this constant to 0 disables this behaviour.
@@ -54,7 +54,7 @@
 #define TINYTEST_PASS  1
 
 /// @brief Prints the given text if the verbose flag has been set
-#define test_print(text) if (verbose) TINYTEST_STANDARD_OUTPUT << text << std::endl
+#define test_print(text) if (TINYTEST_FLAG_VERBOSE) TINYTEST_STANDARD_OUTPUT << text << std::endl
 /// @brief Prints that the test has passed
 #define test_passed() test_print("\t" << COLOR_GREEN << "OK" << COLOR_RESET)
 /// @brief Prints that the test has failed
@@ -73,7 +73,7 @@
 #define _assert_condition_failed(condition, additional_info) \
             TINYTEST_ALL_TESTS_PASSED = false; \
             test_failed(); \
-            if ((TINYTEST_ASSERTION_FAILED_TO_STDERR && !shorten && verbose) || errorOnly) \
+            if ((TINYTEST_ASSERTION_FAILED_TO_STDERR && !TINYTEST_FLAG_SHORTEN && TINYTEST_FLAG_VERBOSE) || TINYTEST_FLAG_ERROR_ONLY) \
                 TINYTEST_STANDARD_ERROR << _stderr_color(COLOR_RED) << _line() << "\nOn file: " << __FILE__ << " - Line " << _stderr_color(COLOR_MAGENTA) << __LINE__ << "\n" << \
                     _stderr_color(COLOR_RED) << "Assertion failed: `" << _stderr_color(COLOR_YELLOW) << #condition << _stderr_color(COLOR_RED) << "`\n" \
                     << additional_info << _line() << _stderr_color(COLOR_RESET) << std::endl;
@@ -242,22 +242,22 @@
 
 /// @brief Call after creating a new test. Allows the test framework to know whether to be verbose or not.
 #define handle_command_line_args() \
-    bool verbose = true; \
-    bool shorten = false; \
-    bool errorOnly = false; \
+    bool TINYTEST_FLAG_VERBOSE = true; \
+    bool TINYTEST_FLAG_SHORTEN = false; \
+    bool TINYTEST_FLAG_ERROR_ONLY = false; \
     for (int i = 1; i < argc; i++) { \
         if (strcmp(argv[i], "silent") == 0 || strcmp(argv[i], "quiet") == 0 || strcmp(argv[i], "-q") == 0) { \
-            verbose = false; \
+            TINYTEST_FLAG_VERBOSE = false; \
         } \
         else if (strcmp(argv[i], "verbose") == 0 || strcmp(argv[i], "-v") == 0) { \
-            verbose = true; \
+            TINYTEST_FLAG_VERBOSE = true; \
         } \
         else if (strcmp(argv[i], "summary") == 0 || strcmp(argv[i], "shorten") == 0 || strcmp(argv[i], "short") == 0 || strcmp(argv[i], "-s") == 0) { \
-            shorten = true; \
+            TINYTEST_FLAG_SHORTEN = true; \
         } \
         else if (strcmp(argv[i], "errors") == 0 || strcmp(argv[i], "error-only") == 0) { \
-            verbose = false; \
-            errorOnly = true; \
+            TINYTEST_FLAG_VERBOSE = false; \
+            TINYTEST_FLAG_ERROR_ONLY = true; \
         } \
         else if (strcmp(argv[i], "help") == 0 || strcmp(argv[i], "-h") == 0) { \
             std::cout << "TinyTest CLI arguments :\n" \
