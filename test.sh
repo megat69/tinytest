@@ -6,7 +6,7 @@ NEUTRAL_COLOR='\033[0;33m'
 NO_COLOR='\033[0m'
 
 BIN_DIRECTORY="./build"
-TEST_ARGUMENTS=""  # Arguments to pass on to each test binary, such as -q, -s, -v, or -e
+TEST_ARGUMENTS=""  # Arguments to pass on to each test binary, such as -q, -s, -v, -e, or -i
 
 if [ $# -ne 0 ] && [[ $1 == -* ]]; then
     TEST_ARGUMENTS="$1"
@@ -32,10 +32,10 @@ fi
 if [ "$1" = "-h" ]; then
     echo -e "Runs through each provided test."
     echo -e "Tests are provided through command line arguments, being the name of any test executable, minus the 'test_' prefix.\n"
-    echo -e "Example : ./tests.sh [dash-args (-q|-v|-s|-e)] tinytest1"
+    echo -e "Example : ./tests.sh [dash-args (-q|-v|-s|-e|-i)] tinytest1"
     echo -e "\tWill run the executable '$BIN_DIRECTORY/test_tinytest1'"
     echo -e "If no name is provided, will run every test in the test directory."
-    echo -e "The dash-args (-q, -v, -s, -e) will be passed to each test, and correspond to TinyTest command line arguments."
+    echo -e "The dash-args (-q, -v, -s, -e, -i) will be passed to each test, and correspond to TinyTest command line arguments."
     exit 0
 fi
 
