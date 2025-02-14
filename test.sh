@@ -6,7 +6,7 @@ NEUTRAL_COLOR='\033[0;33m'
 NO_COLOR='\033[0m'
 
 BIN_DIRECTORY="./build"
-TEST_ARGUMENTS="-q"  # Arguments to pass on to each test binary, such as -q, -s, or error-only
+TEST_ARGUMENTS=""  # Arguments to pass on to each test binary, such as -q, -s, or error-only
 
 if [ $# -eq 0 ]; then
     ALL_EXECUTABLES_TEMP="$(find build/ -maxdepth 1 -type f -name "test_*")"
