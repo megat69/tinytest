@@ -9,7 +9,7 @@
 #include <string>
 
 /// @brief Current version of TinyTest. Follows [Semantic Versioning](https://semver.org/).
-#define TINYTEST_VERSION "1.10.2"
+#define TINYTEST_VERSION "1.11.0"
 
 #ifndef TINYTEST_ASSERTION_FAILED_TO_STDERR
 /// @brief When an assertion fails, some output gets generated and sent to stderr. Setting this constant to 0 disables this behaviour.
@@ -54,15 +54,19 @@
 #define TINYTEST_PASS  1
 
 /// @brief Prints the given text if the verbose flag has been set
-#define test_print(text) if (TINYTEST_FLAG_VERBOSE) TINYTEST_STANDARD_OUTPUT << text << std::endl
+#define test_print(text) if (!TINYTEST_FLAG_IMPORTANT_ONLY && TINYTEST_FLAG_VERBOSE) TINYTEST_STANDARD_OUTPUT << text << std::endl
+/// @brief Prints the given text if the verbose flag has been set
+#define test_print_important(text) if (TINYTEST_FLAG_VERBOSE) TINYTEST_STANDARD_OUTPUT << text << std::endl
 /// @brief Prints that the test has passed
 #define test_passed() test_print("\t" << COLOR_GREEN << "OK" << COLOR_RESET)
 /// @brief Prints that the test has failed
 #define test_failed() test_print("\t" << COLOR_RED << "FAILED" << COLOR_RESET)
 /// @brief Prints the header for a test
-#define test_header(text) test_print("\n" << COLOR_GRAY << "---- " << text << " ----" << COLOR_RESET)
+#define test_header(text) test_print_important("\n" << COLOR_GRAY << "---- " << text << " ----" << COLOR_RESET)
 /// @brief Prints a warning to the user
 #define test_warning(text) test_print(COLOR_YELLOW << "WARNING: " << text << COLOR_RESET)
+/// @brief Prints a warning to the user, even if the important-only flag is set ON
+#define test_warning_important(text) test_print_important(COLOR_YELLOW << "WARNING: " << text << COLOR_RESET)
 
 
 /** @cond PRIVATE */
@@ -161,7 +165,7 @@
 #define benchmark_start() \
     TINYTEST_BENCHMARK_VECTORS.push_back(std::chrono::high_resolution_clock::now()); \
     if (TINYTEST_BENCHMARK_VECTORS.size() != 1) \
-        test_print(COLOR_GRAY << "Benchmark started with id #" << (TINYTEST_BENCHMARK_VECTORS.size() - 1) << COLOR_RESET)
+        test_print_important(COLOR_GRAY << "Benchmark started with id #" << (TINYTEST_BENCHMARK_VECTORS.size() - 1) << COLOR_RESET)
 
 /**
  * @brief Stops the current benchmark and displays the time it took to execute
@@ -170,7 +174,7 @@
     auto TINYTEST_STOP_TIMING = std::chrono::high_resolution_clock::now(); \
     int TINYTEST_CURRENT_BENCHMARK = TINYTEST_BENCHMARK_VECTORS.size() - 1; \
     auto TINYTEST_TIMING_DURATION = std::chrono::duration_cast<std::chrono::microseconds>(TINYTEST_STOP_TIMING - TINYTEST_BENCHMARK_VECTORS[TINYTEST_CURRENT_BENCHMARK]); \
-    test_print(COLOR_GRAY << \
+    test_print_important(COLOR_GRAY << \
     ((TINYTEST_CURRENT_BENCHMARK == 0) ? "Test" : "Benchmark id #") << ((TINYTEST_CURRENT_BENCHMARK == 0) ? "" : std::to_string(TINYTEST_CURRENT_BENCHMARK).c_str()) << " completed in " \
      << COLOR_MAGENTA << _best_time_value(TINYTEST_TIMING_DURATION.count()) << \
     COLOR_GRAY << _best_time_unit(TINYTEST_TIMING_DURATION.count()) << COLOR_RESET); \
@@ -203,7 +207,7 @@
  * @brief Closes a test case and the corresponding scope, and prints out the amount of tests passed, along with timing information.
  */
 #define end_test_case() benchmark_stop(); \
-    test_print(COLOR_GRAY << " -> " << \
+    test_print_important(COLOR_GRAY << " -> " << \
         ((TINYTEST_TESTS_PASSED_COUNT == TINYTEST_ASSERTIONS_COUNT) ? COLOR_GREEN_B : COLOR_RED) << \
          TINYTEST_TESTS_PASSED_COUNT << "/" << TINYTEST_ASSERTIONS_COUNT << \
         COLOR_GRAY << " tests passed." << COLOR_RESET \
@@ -213,14 +217,14 @@
 /**
  * @brief Skips the current test case.
  */
-#define skip_test_case() test_print(COLOR_GRAY << "TEST CASE SKIPPED" << COLOR_RESET); return TINYTEST_SKIP
+#define skip_test_case() test_print_important(COLOR_GRAY << "TEST CASE SKIPPED" << COLOR_RESET); return TINYTEST_SKIP
 
 /**
  * @brief Creates a new flaky test case in a new scope ; basically, a test that will be run multiple times to check for race conditions and the likes
  * @param test_case_header The name of the test case.
  */
 #define new_flaky_test_case(test_case_header) { \
-    test_print(COLOR_GRAY << "\n\n-------------- NEW FLAKY TEST : " << test_case_header << " --------------" << COLOR_RESET); \
+    test_print_important(COLOR_GRAY << "\n\n-------------- NEW FLAKY TEST : " << test_case_header << " --------------" << COLOR_RESET); \
     static int TINYTEST_FLAKY_TEST_PASSES = 0; \
     static int TINYTEST_FLAKY_TEST_FAILS  = 0; \
     static int TINYTEST_FLAKY_TEST_SKIPS  = 0; \
@@ -235,7 +239,7 @@
     if (TINYTEST_CURRENT_FLAKY_TEST_RESULT == TINYTEST_FAIL) TINYTEST_FLAKY_TEST_FAILS++; \
     if (TINYTEST_CURRENT_FLAKY_TEST_RESULT == TINYTEST_SKIP) TINYTEST_FLAKY_TEST_SKIPS++; \
     } \
-    test_print(COLOR_GRAY << "\n\n" << _small_line() << "\n\tPassed: " << COLOR_GREEN << TINYTEST_FLAKY_TEST_PASSES << "/" << TINYTEST_FLAKY_TEST_ITERATIONS << \
+    test_print_important(COLOR_GRAY << "\n\n" << _small_line() << "\n\tPassed: " << COLOR_GREEN << TINYTEST_FLAKY_TEST_PASSES << "/" << TINYTEST_FLAKY_TEST_ITERATIONS << \
         COLOR_GRAY << ", Failed: " << COLOR_RED << TINYTEST_FLAKY_TEST_FAILS << "/" << TINYTEST_FLAKY_TEST_ITERATIONS << \
         COLOR_GRAY << ", Skipped: " << TINYTEST_FLAKY_TEST_SKIPS << "/" << TINYTEST_FLAKY_TEST_ITERATIONS << \
     COLOR_RESET); }
@@ -245,6 +249,7 @@
     bool TINYTEST_FLAG_VERBOSE = true; \
     bool TINYTEST_FLAG_SHORTEN = false; \
     bool TINYTEST_FLAG_ERROR_ONLY = false; \
+    bool TINYTEST_FLAG_IMPORTANT_ONLY = false; \
     for (int i = 1; i < argc; i++) { \
         if (strcmp(argv[i], "silent") == 0 || strcmp(argv[i], "quiet") == 0 || strcmp(argv[i], "-q") == 0) { \
             TINYTEST_FLAG_VERBOSE = false; \
@@ -259,6 +264,9 @@
             TINYTEST_FLAG_VERBOSE = false; \
             TINYTEST_FLAG_ERROR_ONLY = true; \
         } \
+        else if (strcmp(argv[i], "important-only") == 0 || strcmp(argv[i], "important") == 0 || strcmp(argv[i], "-i") == 0) { \
+            TINYTEST_FLAG_IMPORTANT_ONLY = true; \
+        } \
         else if (strcmp(argv[i], "help") == 0 || strcmp(argv[i], "-h") == 0) { \
             std::cout << "TinyTest CLI arguments :\n" \
             << "- help, -h :\n\tShows this message\n" \
@@ -266,11 +274,12 @@
             << "- verbose, -v :\n\tWrites to the standad output. Default behaviour.\n" \
             << "- summary, shorten, short, -s :\n\tRemoves the long details from failed asserts. Failed asserts will only show the 'FAILED' message.\n" \
             << "- errors, error-only, -e :\n\tONLY shows the long details from failed asserts.\n" \
+            << "- important-only, important, -i :\n\tOnly shows test case names and statuses ; a.k.a the most important stuff. Helps summarize in case of long tests.\n" \
             << std::endl; \
             return 0; \
         } \
     } \
-    test_print(COLOR_GRAY << "------------ TinyTest Results ------------" << COLOR_RESET)
+    test_print_important(COLOR_GRAY << "------------ TinyTest Results ------------" << COLOR_RESET)
 
 /// @brief Sarts a new test within the test framework. Needs a body.
 #define new_test() static bool TINYTEST_ALL_TESTS_PASSED = true; int main(int argc, char** argv)
