@@ -9,7 +9,7 @@
 #include <string>
 
 /// @brief Current version of TinyTest. Follows [Semantic Versioning](https://semver.org/).
-#define TINYTEST_VERSION "1.11.0"
+#define TINYTEST_VERSION "1.12.0"
 
 #ifndef TINYTEST_ASSERTION_FAILED_TO_STDERR
 /// @brief When an assertion fails, some output gets generated and sent to stderr. Setting this constant to 0 disables this behaviour.
@@ -222,14 +222,21 @@
 /**
  * @brief Creates a new flaky test case in a new scope ; basically, a test that will be run multiple times to check for race conditions and the likes
  * @param test_case_header The name of the test case.
+ * @param test_case_iterations The amount of iterations that the flaky test should perform
  */
-#define new_flaky_test_case(test_case_header) { \
+#define new_flaky_test_case_pro(test_case_header, test_case_iterations) { \
     test_print_important(COLOR_GRAY << "\n\n-------------- NEW FLAKY TEST : " << test_case_header << " --------------" << COLOR_RESET); \
     static int TINYTEST_FLAKY_TEST_PASSES = 0; \
     static int TINYTEST_FLAKY_TEST_FAILS  = 0; \
     static int TINYTEST_FLAKY_TEST_SKIPS  = 0; \
-    for (int TINYTEST_FLAKY_TEST_ITERATION = 0; TINYTEST_FLAKY_TEST_ITERATION < TINYTEST_FLAKY_TEST_ITERATIONS; TINYTEST_FLAKY_TEST_ITERATION++) { \
+    for (int TINYTEST_FLAKY_TEST_ITERATION = 0; TINYTEST_FLAKY_TEST_ITERATION < test_case_iterations; TINYTEST_FLAKY_TEST_ITERATION++) { \
         int TINYTEST_CURRENT_FLAKY_TEST_RESULT = new_test_case("Flaky Test Run " << TINYTEST_FLAKY_TEST_ITERATION + 1)
+
+/**
+ * @brief Creates a new flaky test case in a new scope ; basically, a test that will be run multiple times to check for race conditions and the likes
+ * @param test_case_header The name of the test case.
+ */
+#define new_flaky_test_case(test_case_header) new_flaky_test_case_pro(test_case_header, TINYTEST_FLAKY_TEST_ITERATIONS)
 
 /**
  * @brief Closes a flaky test case, and prints out the amount of test cases passed, failed, and skipped
