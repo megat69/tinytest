@@ -9,7 +9,7 @@
 #include <string>
 
 /// @brief Current version of TinyTest. Follows [Semantic Versioning](https://semver.org/).
-#define TINYTEST_VERSION "1.12.0"
+#define TINYTEST_VERSION "1.12.1"
 
 #ifndef TINYTEST_ASSERTION_FAILED_TO_STDERR
 /// @brief When an assertion fails, some output gets generated and sent to stderr. Setting this constant to 0 disables this behaviour.
@@ -229,6 +229,7 @@
     static int TINYTEST_FLAKY_TEST_PASSES = 0; \
     static int TINYTEST_FLAKY_TEST_FAILS  = 0; \
     static int TINYTEST_FLAKY_TEST_SKIPS  = 0; \
+    static int TINYTEST_FLAKY_TEST_TOTAL_ITERATIONS = test_case_iterations; \
     for (int TINYTEST_FLAKY_TEST_ITERATION = 0; TINYTEST_FLAKY_TEST_ITERATION < test_case_iterations; TINYTEST_FLAKY_TEST_ITERATION++) { \
         int TINYTEST_CURRENT_FLAKY_TEST_RESULT = new_test_case("Flaky Test Run " << TINYTEST_FLAKY_TEST_ITERATION + 1)
 
@@ -246,9 +247,9 @@
     if (TINYTEST_CURRENT_FLAKY_TEST_RESULT == TINYTEST_FAIL) TINYTEST_FLAKY_TEST_FAILS++; \
     if (TINYTEST_CURRENT_FLAKY_TEST_RESULT == TINYTEST_SKIP) TINYTEST_FLAKY_TEST_SKIPS++; \
     } \
-    test_print_important(COLOR_GRAY << "\n\n" << _small_line() << "\n\tPassed: " << COLOR_GREEN << TINYTEST_FLAKY_TEST_PASSES << "/" << TINYTEST_FLAKY_TEST_ITERATIONS << \
-        COLOR_GRAY << ", Failed: " << COLOR_RED << TINYTEST_FLAKY_TEST_FAILS << "/" << TINYTEST_FLAKY_TEST_ITERATIONS << \
-        COLOR_GRAY << ", Skipped: " << TINYTEST_FLAKY_TEST_SKIPS << "/" << TINYTEST_FLAKY_TEST_ITERATIONS << \
+    test_print_important(COLOR_GRAY << "\n\n" << _small_line() << "\n\tPassed: " << COLOR_GREEN << TINYTEST_FLAKY_TEST_PASSES << "/" << TINYTEST_FLAKY_TEST_TOTAL_ITERATIONS << \
+        COLOR_GRAY << ", Failed: " << COLOR_RED << TINYTEST_FLAKY_TEST_FAILS << "/" << TINYTEST_FLAKY_TEST_TOTAL_ITERATIONS << \
+        COLOR_GRAY << ", Skipped: " << TINYTEST_FLAKY_TEST_SKIPS << "/" << TINYTEST_FLAKY_TEST_TOTAL_ITERATIONS << \
     COLOR_RESET); }
 
 /// @brief Call after creating a new test. Allows the test framework to know whether to be verbose or not.
