@@ -9,7 +9,7 @@
 #include <string>
 
 /// @brief Current version of TinyTest. Follows [Semantic Versioning](https://semver.org/).
-#define TINYTEST_VERSION "1.10.1"
+#define TINYTEST_VERSION "1.10.2"
 
 #ifndef TINYTEST_ASSERTION_FAILED_TO_STDERR
 /// @brief When an assertion fails, some output gets generated and sent to stderr. Setting this constant to 0 disables this behaviour.
@@ -255,7 +255,7 @@
         else if (strcmp(argv[i], "summary") == 0 || strcmp(argv[i], "shorten") == 0 || strcmp(argv[i], "short") == 0 || strcmp(argv[i], "-s") == 0) { \
             TINYTEST_FLAG_SHORTEN = true; \
         } \
-        else if (strcmp(argv[i], "errors") == 0 || strcmp(argv[i], "error-only") == 0) { \
+        else if (strcmp(argv[i], "errors") == 0 || strcmp(argv[i], "error-only") == 0 || strcmp(argv[i], "-e") == 0) { \
             TINYTEST_FLAG_VERBOSE = false; \
             TINYTEST_FLAG_ERROR_ONLY = true; \
         } \
@@ -265,7 +265,7 @@
             << "- silent, quiet, -q :\n\tDoes not write anything to the standard output\n" \
             << "- verbose, -v :\n\tWrites to the standad output. Default behaviour.\n" \
             << "- summary, shorten, short, -s :\n\tRemoves the long details from failed asserts. Failed asserts will only show the 'FAILED' message.\n" \
-            << "- errors, error-only :\n\tONLY shows the long details from failed asserts.\n" \
+            << "- errors, error-only, -e :\n\tONLY shows the long details from failed asserts.\n" \
             << std::endl; \
             return 0; \
         } \
