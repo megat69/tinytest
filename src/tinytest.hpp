@@ -6,10 +6,12 @@
 #include <iostream>
 #include <chrono>
 #include <vector>
+#include <unordered_set>
+#include <initializer_list>
 #include <string>
 
 /// @brief Current version of TinyTest. Follows [Semantic Versioning](https://semver.org/).
-#define TINYTEST_VERSION "1.12.1"
+#define TINYTEST_VERSION "1.13.0"
 
 #ifndef TINYTEST_ASSERTION_FAILED_TO_STDERR
 /// @brief When an assertion fails, some output gets generated and sent to stderr. Setting this constant to 0 disables this behaviour.
@@ -193,16 +195,32 @@
  */
 #define benchmark_long_stop() } benchmark_stop()
 
-/**
- * @brief Opens a new test case in a new scope, with timer.
- * @param test_case_header The name of the test case.
- */
-#define new_test_case(test_case_header) [&](){ \
+/** @cond PRIVATE */
+#define _base_test_case(test_case_header, instructions) [&](){ \
+    instructions \
     test_header(test_case_header); \
     int TINYTEST_ASSERTIONS_COUNT = 0; \
     int TINYTEST_TESTS_PASSED_COUNT = 0; \
     std::vector<std::chrono::_V2::system_clock::time_point> TINYTEST_BENCHMARK_VECTORS; \
     benchmark_start()
+/** @endcond */
+
+/**
+ * @brief Opens a new test case in a new scope, with timer.
+ * @param test_case_header The name of the test case.
+ */
+#define new_test_case(test_case_header) _base_test_case(test_case_header, if (TINYTEST_CURRENT_TAG != "") return TINYTEST_SKIP;)
+
+/**
+ * @brief Opens a new test case in a new scope, with timer. This also supports tags, and will only run if it has the correct tag
+ * @param test_case_header The name of the test case.
+ * @param tag The tag of the test case
+ */
+#define new_tagged_test_case(test_case_header, tag) _base_test_case(test_case_header, \
+    static std::unordered_set<std::string> TINYTEST_TAGS = { tag } ; \
+    if (!TINYTEST_TAGS.empty() && !TINYTEST_TAGS.count(TINYTEST_CURRENT_TAG) && TINYTEST_CURRENT_TAG != "") return TINYTEST_SKIP; \
+)
+
 /**
  * @brief Closes a test case and the corresponding scope, and prints out the amount of tests passed, along with timing information.
  */
@@ -258,6 +276,7 @@
     bool TINYTEST_FLAG_SHORTEN = false; \
     bool TINYTEST_FLAG_ERROR_ONLY = false; \
     bool TINYTEST_FLAG_IMPORTANT_ONLY = false; \
+    std::string TINYTEST_CURRENT_TAG = ""; \
     for (int i = 1; i < argc; i++) { \
         if (strcmp(argv[i], "silent") == 0 || strcmp(argv[i], "quiet") == 0 || strcmp(argv[i], "-q") == 0) { \
             TINYTEST_FLAG_VERBOSE = false; \
@@ -275,6 +294,12 @@
         else if (strcmp(argv[i], "important-only") == 0 || strcmp(argv[i], "important") == 0 || strcmp(argv[i], "-i") == 0) { \
             TINYTEST_FLAG_IMPORTANT_ONLY = true; \
         } \
+        else if (strncmp(argv[i], "tag:", strlen("tag:")) == 0) { \
+            TINYTEST_CURRENT_TAG = std::string(argv[i] + strlen("tag:")); \
+        } \
+        else if (strncmp(argv[i], "-t:", strlen("-t:")) == 0) { \
+            TINYTEST_CURRENT_TAG = std::string(argv[i] + strlen("-t:")); \
+        } \
         else if (strcmp(argv[i], "help") == 0 || strcmp(argv[i], "-h") == 0) { \
             std::cout << "TinyTest CLI arguments :\n" \
             << "- help, -h :\n\tShows this message\n" \
@@ -284,6 +309,7 @@
             << "- summary, shorten, short, -s :\n\tRemoves the long details from failed asserts. Failed asserts will only show the 'FAILED' message.\n" \
             << "- errors, error-only, -e :\n\tONLY shows the long details from failed asserts.\n" \
             << "- important-only, important, -i :\n\tOnly shows test case names and statuses ; a.k.a the most important stuff. Helps summarize in case of long tests.\n" \
+            << "- tag:<tag>, -t:<tag> :\n\tOnly runs test with the corresponding tag. <tag> should be a valid string.\n" \
             << std::endl; \
             return 0; \
         } \

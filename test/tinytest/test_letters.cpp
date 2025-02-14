@@ -17,7 +17,7 @@ new_test() {
         test_assert("Letter 'z' is worth 10 points ?", pointsFromZ == 10);
     end_test_case();
 
-    new_test_case("Test lookup for letter, uppercase");
+    new_tagged_test_case("Test lookup for letter, uppercase", "Failing");
         short pointsFromA = get_points_from_letter('A');
         test_assert_var("Letter 'A' is worth 1 point ?", pointsFromA, ==, 1);
 
@@ -28,7 +28,7 @@ new_test() {
         test_assert_var("Letter 'Z' is worth 10 point ?", pointsFromZ, ==, 11);
     end_test_case();
 
-    new_test_case("Test lookup for non-existent letter");
+    new_tagged_test_case("Test lookup for non-existent letter", "Failing");
         short pointsFromUnknown = get_points_from_letter(' ');
         test_assert_pro("Letter ' ' is worth -1 point ?", pointsFromUnknown == 0, "pointsFromUnknown = " << pointsFromUnknown);
     end_test_case();
@@ -83,6 +83,14 @@ new_test() {
             break;
         }
     end_flaky_test_case();
+
+    new_tagged_test_case("Tagged test case 1", "Tag1");
+        test_print("Tag1 runs !");
+    end_test_case();
+
+    new_tagged_test_case("Tagged test case 2", "Tag2");
+        test_print("Tag2 runs !");
+    end_test_case();
 
     end_of_all_tests();
 }
