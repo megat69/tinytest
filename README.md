@@ -91,6 +91,7 @@ You can mainly use 3 macros for this purpose :
   - `operator` corresponds to a C++ operator, such as `==`, `>`, etc. ;
   - `value` corresponds to the value the variable is tested against.
 - `test_assert_pro(title, assertion, additional_message_on_failure)` : Same as `test_assert()`, but lets you send additional info to the standard error stream on failure.
+- `test_assert_throws(title, expression)` and variants : Checks whether the given expression throws an exception ; if so, the test passes, otherwise, the test fails.
 
 **Example :**  
 ```cpp
@@ -111,6 +112,8 @@ new_test() {
 
         a++;
         test_assert_pro("Checking evenness of a", a % 2 == 0, "Variable a is not even, since a = " << a);
+
+        test_assert_throws("Checking zero division error", a / 0);
     end_test_case();
 
     end_of_all_tests();
