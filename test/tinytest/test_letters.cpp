@@ -88,7 +88,7 @@ new_test() {
         test_print("Tag1 runs !");
     end_test_case();
 
-    new_tagged_test_case("Tagged test case 2", "Tag2", "AllTags");
+    new_tagged_test_case("Tagged test case 2");
         test_print("Tag2 runs !");
     end_test_case();
 
