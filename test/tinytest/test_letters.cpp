@@ -84,11 +84,11 @@ new_test() {
         }
     end_flaky_test_case();
 
-    new_tagged_test_case("Tagged test case 1", "Tag1");
+    new_tagged_test_case("Tagged test case 1", "Tag1", "AllTags");
         test_print("Tag1 runs !");
     end_test_case();
 
-    new_tagged_test_case("Tagged test case 2", "Tag2");
+    new_tagged_test_case("Tagged test case 2", "Tag2", "AllTags");
         test_print("Tag2 runs !");
     end_test_case();
 

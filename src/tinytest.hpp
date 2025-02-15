@@ -11,7 +11,7 @@
 #include <string>
 
 /// @brief Current version of TinyTest. Follows [Semantic Versioning](https://semver.org/).
-#define TINYTEST_VERSION "1.13.0"
+#define TINYTEST_VERSION "1.13.1"
 
 #ifndef TINYTEST_ASSERTION_FAILED_TO_STDERR
 /// @brief When an assertion fails, some output gets generated and sent to stderr. Setting this constant to 0 disables this behaviour.
@@ -196,8 +196,8 @@
 #define benchmark_long_stop() } benchmark_stop()
 
 /** @cond PRIVATE */
-#define _base_test_case(test_case_header, instructions) [&](){ \
-    instructions \
+#define _base_test_case(test_case_header, ...) [&](){ \
+    __VA_ARGS__ \
     test_header(test_case_header); \
     int TINYTEST_ASSERTIONS_COUNT = 0; \
     int TINYTEST_TESTS_PASSED_COUNT = 0; \
@@ -214,10 +214,10 @@
 /**
  * @brief Opens a new test case in a new scope, with timer. This also supports tags, and will only run if it has the correct tag
  * @param test_case_header The name of the test case.
- * @param tag The tag of the test case
+ * @param tags A list of tags to apply to the test case, separated by commas
  */
-#define new_tagged_test_case(test_case_header, tag) _base_test_case(test_case_header, \
-    static std::unordered_set<std::string> TINYTEST_TAGS = { tag } ; \
+#define new_tagged_test_case(test_case_header, ...) _base_test_case(test_case_header, \
+    static std::unordered_set<std::string> TINYTEST_TAGS = { __VA_ARGS__ } ; \
     if (!TINYTEST_TAGS.empty() && !TINYTEST_TAGS.count(TINYTEST_CURRENT_TAG) && TINYTEST_CURRENT_TAG != "") return TINYTEST_SKIP; \
 )
 
