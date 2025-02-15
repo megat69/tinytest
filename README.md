@@ -119,3 +119,8 @@ new_test() {
     end_of_all_tests();
 }
 ```
+
+## Documentation
+Using `./build.sh doc` will generate a documentation at the `./doc/` path.  
+For the HTML documentation, follow `./doc/html/index.html`.  
+This documentation will be much more complete than the quickstart you can find in this readme.
