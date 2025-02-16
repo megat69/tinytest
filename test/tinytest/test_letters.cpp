@@ -92,5 +92,19 @@ new_test() {
         test_print("Tag2 runs !");
     end_test_case();
 
+#undef TINYTEST_SETUP_FUNCTION
+#undef TINYTEST_TEARDOWN_FUNCTION
+#define TINYTEST_SETUP_FUNCTION() std::cout << "I like trains." << std::endl;
+#define TINYTEST_TEARDOWN_FUNCTION() std::cout << "VROOOOOOOOM." << std::endl;
+
+    new_test_case("Setup/Teardown functions", "Setup", "Teardown");
+        test_print("Wow, so meaningful.");
+    end_test_case();
+
+#undef TINYTEST_SETUP_FUNCTION
+#undef TINYTEST_TEARDOWN_FUNCTION
+#define TINYTEST_SETUP_FUNCTION()
+#define TINYTEST_TEARDOWN_FUNCTION()
+
     end_of_all_tests();
 }

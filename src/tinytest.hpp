@@ -11,7 +11,7 @@
 #include <string>
 
 /// @brief Current version of TinyTest. Follows [Semantic Versioning](https://semver.org/).
-#define TINYTEST_VERSION "1.14.1"
+#define TINYTEST_VERSION "1.15.0"
 
 #ifndef TINYTEST_ASSERTION_FAILED_TO_STDERR
 /// @brief When an assertion fails, some output gets generated and sent to stderr. Setting this constant to 0 disables this behaviour.
@@ -41,6 +41,23 @@
 #ifndef TINYTEST_FLAKY_TEST_ITERATIONS
 /// @brief How many times flaky tests should be run
 #define TINYTEST_FLAKY_TEST_ITERATIONS 10
+#endif
+
+#ifndef TINYTEST_SETUP_FUNCTION
+/**
+ * @brief A macro that will be run at the start of every test case, at the beginning of the test scope.
+ *  This allows for a certain piece of code to set up every test case in a test unit.
+ */
+#define TINYTEST_SETUP_FUNCTION()
+#endif
+
+#ifndef TINYTEST_TEARDOWN_FUNCTION
+/**
+ * @brief A macro that will be run at the end of every test case, at the end of the test scope.
+ *  This allows for a certain piece of code to tear down every test case in a test unit, 
+ *  for example using delete on the correct components.
+ */
+#define TINYTEST_TEARDOWN_FUNCTION()
 #endif
 
 #define COLOR_RESET     "\033[1;0m"
@@ -204,6 +221,7 @@
     int TINYTEST_ASSERTIONS_COUNT = 0; \
     int TINYTEST_TESTS_PASSED_COUNT = 0; \
     std::vector<std::chrono::_V2::system_clock::time_point> TINYTEST_BENCHMARK_VECTORS; \
+    TINYTEST_SETUP_FUNCTION(); \
     benchmark_start()
 /** @endcond */
 
@@ -231,6 +249,7 @@
  * @brief Closes a test case and the corresponding scope, and prints out the amount of tests passed, along with timing information.
  */
 #define end_test_case() benchmark_stop(); \
+    TINYTEST_TEARDOWN_FUNCTION(); \
     test_print_important(COLOR_GRAY << " -> " << \
         ((TINYTEST_TESTS_PASSED_COUNT == TINYTEST_ASSERTIONS_COUNT) ? COLOR_GREEN_B : COLOR_RED) << \
          TINYTEST_TESTS_PASSED_COUNT << "/" << TINYTEST_ASSERTIONS_COUNT << \
