@@ -132,5 +132,10 @@ new_test() {
 #define TINYTEST_SETUP_FUNCTION()
 #define TINYTEST_TEARDOWN_FUNCTION()
 
+    new_test_case("Is the 'TEST' flag ON or OFF ?");
+        test_print("'TEST' is " << ((is_tinytest_flag_enabled("TEST")) ? "ON" : "OFF") << " !");
+        test_print("'TESTS' is " << ((is_tinytest_flag_enabled("TESTS")) ? "ON" : "OFF") << " !");
+    end_test_case();
+
     end_of_all_tests();
 }

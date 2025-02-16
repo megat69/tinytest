@@ -9,10 +9,12 @@
 #include <unordered_set>
 #include <initializer_list>
 #include <string>
+#include <sstream>
 #include <cmath>
+#include <set>
 
 /// @brief Current version of TinyTest. Follows [Semantic Versioning](https://semver.org/).
-#define TINYTEST_VERSION "1.16.0"
+#define TINYTEST_VERSION "1.17.0"
 
 #ifndef TINYTEST_ASSERTION_FAILED_TO_STDERR
 /// @brief When an assertion fails, some output gets generated and sent to stderr. Setting this constant to 0 disables this behaviour.
@@ -325,6 +327,13 @@
         COLOR_GRAY << ", Skipped: " << TINYTEST_FLAKY_TEST_SKIPS << "/" << TINYTEST_FLAKY_TEST_TOTAL_ITERATIONS << \
     COLOR_RESET); }
 
+/**
+ * @brief Whether a TinyTest flag is enabled.
+ * @param flag_name The name of the flag, as a string (const char*).
+ * @return A boolean indicating whether the flag is enabled.
+ */
+#define is_tinytest_flag_enabled(flag_name) (TINYTEST_ENABLED_USER_FLAGS.find(flag_name) != TINYTEST_ENABLED_USER_FLAGS.end())
+
 /// @brief Call after creating a new test. Allows the test framework to know whether to be verbose or not.
 #define handle_command_line_args() \
     bool TINYTEST_FLAG_VERBOSE = true; \
@@ -332,6 +341,7 @@
     bool TINYTEST_FLAG_ERROR_ONLY = false; \
     bool TINYTEST_FLAG_IMPORTANT_ONLY = false; \
     std::string TINYTEST_CURRENT_TAG = ""; \
+    std::unordered_set<std::string> TINYTEST_ENABLED_USER_FLAGS = {};\
     for (int i = 1; i < argc; i++) { \
         if (strcmp(argv[i], "silent") == 0 || strcmp(argv[i], "quiet") == 0 || strcmp(argv[i], "-q") == 0) { \
             TINYTEST_FLAG_VERBOSE = false; \
@@ -355,6 +365,18 @@
         else if (strncmp(argv[i], "-t:", strlen("-t:")) == 0) { \
             TINYTEST_CURRENT_TAG = std::string(argv[i] + strlen("-t:")); \
         } \
+        else if (strncmp(argv[i], "flags:", strlen("flags:")) == 0) { \
+            std::stringstream tinytest_flags(argv[i] + strlen("flags:")); \
+            std::string tinytest_current_flag; \
+            while (std::getline(tinytest_flags, tinytest_current_flag, ',')) \
+                TINYTEST_ENABLED_USER_FLAGS.insert(tinytest_current_flag); \
+        } \
+        else if (strncmp(argv[i], "-f:", strlen("-f:")) == 0) { \
+            std::stringstream tinytest_flags(argv[i] + strlen("-f:")); \
+            std::string tinytest_current_flag; \
+            while (std::getline(tinytest_flags, tinytest_current_flag, ',')) \
+                TINYTEST_ENABLED_USER_FLAGS.insert(tinytest_current_flag); \
+        } \
         else if (strcmp(argv[i], "help") == 0 || strcmp(argv[i], "-h") == 0) { \
             std::cout << "TinyTest CLI arguments :\n" \
             << "- help, -h :\n\tShows this message\n" \
@@ -365,6 +387,7 @@
             << "- errors, error-only, -e :\n\tONLY shows the long details from failed asserts.\n" \
             << "- important-only, important, -i :\n\tOnly shows test case names and statuses ; a.k.a the most important stuff. Helps summarize in case of long tests.\n" \
             << "- tag:<tag>, -t:<tag> :\n\tOnly runs test with the corresponding tag. <tag> should be a valid string.\n" \
+            << "- flags:<flags>, -f:<flags> :\n\tEnables the given tags. These should be one word, separated by commas.\n" \
             << std::endl; \
             return 0; \
         } \
