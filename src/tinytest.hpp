@@ -9,9 +9,10 @@
 #include <unordered_set>
 #include <initializer_list>
 #include <string>
+#include <cmath>
 
 /// @brief Current version of TinyTest. Follows [Semantic Versioning](https://semver.org/).
-#define TINYTEST_VERSION "1.15.1"
+#define TINYTEST_VERSION "1.16.0"
 
 #ifndef TINYTEST_ASSERTION_FAILED_TO_STDERR
 /// @brief When an assertion fails, some output gets generated and sent to stderr. Setting this constant to 0 disables this behaviour.
@@ -213,6 +214,35 @@
  * @brief Marks the end of a "long" benchmark created with the `benchmark_long_start()` macro
  */
 #define benchmark_long_stop() } benchmark_stop()
+
+/** @cond PRIVATE */
+#define _get_approx_complexity(input_size, call_count, approx_complexity) [&](){ \
+    if (std::abs(approx_complexity) < 0.1 || call_count == 1) return "O(1)"; \
+    if (std::abs(approx_complexity - 2) < 0.2 || std::abs(std::sqrt(call_count) - input_size) < 0.2) return "O(N^2)"; \
+    if (std::abs(approx_complexity - 1) < 0.2) return "O(N)"; \
+    if (std::abs(approx_complexity - 0.693) < 0.2) return "O(log N)"; \
+    if (std::abs(approx_complexity - 1.5) < 0.2) return "O(N log N)"; \
+    if (call_count > std::pow(2, input_size / 10)) return "O(2^N)";  /* Rough exponential check */ \
+    return "unknown"; \
+}()
+/** @endcond */
+
+/**
+ * @brief Starts a VERY rough complexity check.
+ * @param input_size The size of the input. In Big O notation, with O(n), n is the input size.
+ * @warning The check is VERY rough, as it is done in a single pass. Results may or may not be accurate at all. Use at your own discretion.
+ */
+#define start_complexity_check(input_size) const unsigned int TINYTEST_COMPLEXITY_CHECK_INPUT_SIZE = input_size; unsigned int TINYTEST_COMPLEXITY_CHECK_CALL_COUNT = 0
+
+/// @brief Call during a complexity check every time you want to incrase the complexity
+#define tick_complexity_check() TINYTEST_COMPLEXITY_CHECK_CALL_COUNT++
+
+/// @brief Stops a complexity check and outputs VERY rough results.
+#define stop_complexity_check() double TINYTEST_COMPLEXITY_APPROX = std::log(TINYTEST_COMPLEXITY_CHECK_INPUT_SIZE) / std::log(TINYTEST_COMPLEXITY_CHECK_CALL_COUNT); \
+    test_print(COLOR_GRAY << "Complexity check finished. Approximate complexity with input size " << TINYTEST_COMPLEXITY_CHECK_INPUT_SIZE \
+        << " and call count " << TINYTEST_COMPLEXITY_CHECK_CALL_COUNT << " is " << COLOR_MAGENTA << _get_approx_complexity( \
+        TINYTEST_COMPLEXITY_CHECK_INPUT_SIZE, TINYTEST_COMPLEXITY_CHECK_CALL_COUNT, TINYTEST_COMPLEXITY_APPROX \
+    ) << COLOR_GRAY << "." << COLOR_RESET)
 
 /** @cond PRIVATE */
 #define _base_test_case(test_case_header, ...) [&](){ \

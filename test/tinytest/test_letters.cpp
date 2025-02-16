@@ -103,6 +103,32 @@ new_test() {
 
 #undef TINYTEST_SETUP_FUNCTION
 #undef TINYTEST_TEARDOWN_FUNCTION
+#define TINYTEST_SETUP_FUNCTION() constexpr unsigned int input_size = 100;
+#define TINYTEST_TEARDOWN_FUNCTION()
+
+    new_test_case("Complexity check, O(1)", "ComplexityChecks");
+        start_complexity_check(input_size);
+        tick_complexity_check();
+        stop_complexity_check();
+    end_test_case();
+
+    new_test_case("Complexity check, O(n)", "ComplexityChecks");
+        start_complexity_check(input_size);
+        for (int i = 0; i < input_size; i++)
+            tick_complexity_check();
+        stop_complexity_check();
+    end_test_case();
+
+    new_test_case("Complexity check, O(n^2)", "ComplexityChecks");
+        start_complexity_check(input_size);
+        for (int i = 0; i < input_size; i++)
+        for (int j = 0; j < input_size; j++)
+            tick_complexity_check();
+        stop_complexity_check();
+    end_test_case();
+
+#undef TINYTEST_SETUP_FUNCTION
+#undef TINYTEST_TEARDOWN_FUNCTION
 #define TINYTEST_SETUP_FUNCTION()
 #define TINYTEST_TEARDOWN_FUNCTION()
 
