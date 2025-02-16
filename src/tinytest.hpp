@@ -11,7 +11,7 @@
 #include <string>
 
 /// @brief Current version of TinyTest. Follows [Semantic Versioning](https://semver.org/).
-#define TINYTEST_VERSION "1.15.0"
+#define TINYTEST_VERSION "1.15.1"
 
 #ifndef TINYTEST_ASSERTION_FAILED_TO_STDERR
 /// @brief When an assertion fails, some output gets generated and sent to stderr. Setting this constant to 0 disables this behaviour.
@@ -39,7 +39,7 @@
 #endif
 
 #ifndef TINYTEST_FLAKY_TEST_ITERATIONS
-/// @brief How many times flaky tests should be run
+/// @brief How many times flaky tests should be run by default
 #define TINYTEST_FLAKY_TEST_ITERATIONS 10
 #endif
 
@@ -74,7 +74,7 @@
 
 /// @brief Prints the given text if the verbose flag has been set
 #define test_print(text) if (!TINYTEST_FLAG_IMPORTANT_ONLY && TINYTEST_FLAG_VERBOSE) TINYTEST_STANDARD_OUTPUT << text << std::endl
-/// @brief Prints the given text if the verbose flag has been set
+/// @brief Prints the given text if the verbose flag has been set, even if the important-only flag is set ON
 #define test_print_important(text) if (TINYTEST_FLAG_VERBOSE) TINYTEST_STANDARD_OUTPUT << text << std::endl
 /// @brief Prints that the test has passed
 #define test_passed() test_print("\t" << COLOR_GREEN << "OK" << COLOR_RESET)
@@ -166,10 +166,10 @@
         } \
     }
 
-/// @brief Creates a new test, with an expression that is supposed to throw an error. Provides the ability to send an error message
+/// @brief Creates a new test, with an expression that is supposed to throw an exception. Provides the ability to send an error message.
 #define test_assert_throws_pro(title, expression, message_on_failure) test_assert_throws_pro_ex(title, expression, std::exception, message_on_failure << "\n")
 
-/// @brief Creates a new test, with an expression that is supposed to throw an error
+/// @brief Creates a new test, with an expression that is supposed to throw an exception.
 #define test_assert_throws(title, expression) test_assert_throws_pro(title, expression, "The assertion did not throw any exception.\n")
 
 /** @cond PRIVATE */
@@ -240,7 +240,7 @@
  * @brief Opens a new test case in a new scope, with timer. This also supports tags, and will only run if it has the correct tag
  * @param test_case_header The name of the test case.
  * @param tags A list of tags to apply to the test case, separated by commas
- * @deprecated
+ * @deprecated Deprecated since version 1.14.1 ; use `new_test_case()` instead.
  */
 #define new_tagged_test_case(test_case_header, ...) tinytest_deprecated("new_tagged_test_case", "new_test_case"); \
     new_test_case(test_case_header, __VA_ARGS__)
@@ -345,7 +345,10 @@
     } \
     test_print_important(COLOR_GRAY << "------------ TinyTest Results ------------" << COLOR_RESET)
 
-/// @brief Sarts a new test within the test framework. Needs a body.
+/**
+ * @brief Sarts a new test within the test framework. Needs a body.
+ * @warning This is by all means a `main` function. Make sure there is no other main function in your program.
+ */
 #define new_test() static bool TINYTEST_ALL_TESTS_PASSED = true; int main(int argc, char** argv)
 
 /// @brief To be called after every test has run. Terminates the testing process with code 0 if all tests passed, and code 1 if at least one test failed.
