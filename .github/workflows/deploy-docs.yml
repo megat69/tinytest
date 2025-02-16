@@ -1,0 +1,25 @@
+name: Build and Deploy Docs
+
+on:
+  push:
+    branches:
+      - main
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Set up environment
+        run: chmod +x build.sh  # Ensure build script is executable
+
+      - name: Build documentation
+        run: ./build.sh doc  # Run the build command
+
+      - name: Deploy to GitHub Pages
+        uses: JamesIves/github-pages-deploy-action@v4
+        with:
+          branch: main
+          folder: doc/html  # The compiled documentation output
