@@ -11,7 +11,7 @@
 #include <string>
 
 /// @brief Current version of TinyTest. Follows [Semantic Versioning](https://semver.org/).
-#define TINYTEST_VERSION "1.14.0"
+#define TINYTEST_VERSION "1.14.1"
 
 #ifndef TINYTEST_ASSERTION_FAILED_TO_STDERR
 /// @brief When an assertion fails, some output gets generated and sent to stderr. Setting this constant to 0 disables this behaviour.
@@ -87,6 +87,8 @@
 #define _assert_condition_passed(condition) \
             TINYTEST_TESTS_PASSED_COUNT++; \
             test_passed(); 
+#define tinytest_deprecated(old_function_name, new_function_name) [[deprecated]]; \
+    test_warning_important(old_function_name << "() (line " << __LINE__ << ") is deprecated, in favor of " << old_function_name << "().")
 /** @endcond */
 
 /**
@@ -220,9 +222,9 @@
  * @brief Opens a new test case in a new scope, with timer. This also supports tags, and will only run if it has the correct tag
  * @param test_case_header The name of the test case.
  * @param tags A list of tags to apply to the test case, separated by commas
+ * @deprecated
  */
-#define new_tagged_test_case(test_case_header, ...) [[deprecated]]; \
-    test_warning_important("new_tagged_test_case() (line " << __LINE__ << ") is deprecated, in favor of new_test_case() with the exact same behaviour."); \
+#define new_tagged_test_case(test_case_header, ...) tinytest_deprecated("new_tagged_test_case", "new_test_case"); \
     new_test_case(test_case_header, __VA_ARGS__)
 
 /**
