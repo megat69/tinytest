@@ -14,7 +14,7 @@
 #include <set>
 
 /// @brief Current version of TinyTest. Follows [Semantic Versioning](https://semver.org/).
-#define TINYTEST_VERSION "1.18.2"
+#define TINYTEST_VERSION "1.19.0"
 
 #ifndef TINYTEST_ASSERTION_FAILED_TO_STDERR
 /// @brief When an assertion fails, some output gets generated and sent to stderr. Setting this constant to 0 disables this behaviour.
@@ -342,10 +342,17 @@
 
 /**
  * @brief Allows to specify which flags the test program can expect to be passed.
- * @param tags A variable number of flags, as strings (const char* or std::string).
+ * @param flags A variable number of flags, as strings (const char* or std::string).
  * Is used to generate the list displayed to the user when using the `show-flags` command line argument.
  */
 #define tinytest_set_available_flags(...) TINYTEST_AVAILABLE_FLAGS = { __VA_ARGS__ }
+
+/**
+ * @brief Allows to specify which tags test cases in the program contain.
+ * @param tags A variable number of tags, as strings (const char* or std::string).
+ * Is used to generate the list displayed to the user when using the `show-tags` command line argument.
+ */
+#define tinytest_set_available_tags(...) TINYTEST_AVAILABLE_TAGS = { __VA_ARGS__ }
 
 /// @brief Call after creating a new test. Allows the test framework to know whether to be verbose or not.
 #define handle_command_line_args() \
@@ -400,6 +407,16 @@
             std::cout << std::flush; \
             return 0; \
         } \
+        else if (strcmp(argv[i], "show-tags") == 0 || strcmp(argv[i], "available-tags") == 0 || strcmp(argv[i], "tags") == 0) { \
+            if (!TINYTEST_AVAILABLE_FLAGS.empty()) { \
+                std::cout << "Available tags :\n"; \
+                for (const std::string& currentTag : TINYTEST_AVAILABLE_TAGS) \
+                    std::cout << "- " << currentTag << "\n"; \
+            } \
+            else std::cout << "This test program doesn't seem to implement any tags." << std::endl; \
+            std::cout << std::flush; \
+            return 0; \
+        } \
         else if (strcmp(argv[i], "help") == 0 || strcmp(argv[i], "-h") == 0) { \
             std::cout << "TinyTest CLI arguments :\n" \
             << "- help, -h :\n\tShows this message\n" \
@@ -410,6 +427,7 @@
             << "- errors, error-only, -e :\n\tONLY shows the long details from failed asserts.\n" \
             << "- important-only, important, -i :\n\tOnly shows test case names and statuses ; a.k.a the most important stuff. Helps summarize in case of long tests.\n" \
             << "- show-flags, available-flags, flags :\n\tShows which flags the test program can receive. Not every program will implement this.\n" \
+            << "- show-tags, available-tags, tags :\n\tShows which flags the test program can receive. Not every program will implement this.\n" \
             << "- tag:<tag>, -t:<tag> :\n\tOnly runs test with the corresponding tag. <tag> should be a valid string.\n" \
             << "- flags:<flags>, -f:<flags> :\n\tEnables the given tags. These should be one word, separated by commas.\n" \
             << std::endl; \
@@ -427,7 +445,8 @@
  * @warning This is by all means a `main` function. Make sure there is no other main function in your program.
  */
 #define new_test() static bool TINYTEST_ALL_TESTS_PASSED = true; \
-    static std::unordered_set<std::string> TINYTEST_AVAILABLE_FLAGS = {}; \
+    static std::set<std::string> TINYTEST_AVAILABLE_FLAGS = {}; \
+    static std::set<std::string> TINYTEST_AVAILABLE_TAGS = {}; \
     int main(int argc, char** argv)
 
 /// @brief To be called after every test has run. Terminates the testing process with code 0 if all tests passed, and code 1 if at least one test failed.

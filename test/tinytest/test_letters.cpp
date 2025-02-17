@@ -8,6 +8,7 @@
 
 new_test() {
     tinytest_set_available_flags("TEST", "TESTS");
+    tinytest_set_available_tags("Failing", "Flaky", "Tag1", "Tag2", "AllTags", "ComplexityChecks");
     handle_command_line_args();
 
     new_test_case("Test lookup for letter, lowercase");
