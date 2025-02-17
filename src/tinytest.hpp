@@ -14,7 +14,7 @@
 #include <set>
 
 /// @brief Current version of TinyTest. Follows [Semantic Versioning](https://semver.org/).
-#define TINYTEST_VERSION "1.18.0"
+#define TINYTEST_VERSION "1.18.1"
 
 #ifndef TINYTEST_ASSERTION_FAILED_TO_STDERR
 /// @brief When an assertion fails, some output gets generated and sent to stderr. Setting this constant to 0 disables this behaviour.
@@ -334,6 +334,11 @@
  */
 #define is_tinytest_flag_enabled(flag_name) (TINYTEST_ENABLED_USER_FLAGS.find(flag_name) != TINYTEST_ENABLED_USER_FLAGS.end())
 
+/**
+ * @brief Allows to specify which flags the test program can expect to be passed.
+ * @param tags A variable number of flags, as strings (const char* or std::string).
+ * Is used to generate the list displayed to the user when using the `show-flags` command line argument.
+ */
 #define tinytest_set_available_flags(...) TINYTEST_AVAILABLE_FLAGS = { __VA_ARGS__ }
 
 /// @brief Call after creating a new test. Allows the test framework to know whether to be verbose or not.
