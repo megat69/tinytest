@@ -14,7 +14,7 @@
 #include <set>
 
 /// @brief Current version of TinyTest. Follows [Semantic Versioning](https://semver.org/).
-#define TINYTEST_VERSION "1.18.1"
+#define TINYTEST_VERSION "1.18.2"
 
 #ifndef TINYTEST_ASSERTION_FAILED_TO_STDERR
 /// @brief When an assertion fails, some output gets generated and sent to stderr. Setting this constant to 0 disables this behaviour.
@@ -298,21 +298,25 @@
  * @brief Creates a new flaky test case in a new scope ; basically, a test that will be run multiple times to check for race conditions and the likes
  * @param test_case_header The name of the test case.
  * @param test_case_iterations The amount of iterations that the flaky test should perform
+ * @param tags A list of tags to apply to the flaky test case, separated by commas
  */
-#define new_flaky_test_case_pro(test_case_header, test_case_iterations) { \
-    test_print_important(COLOR_GRAY << "\n\n-------------- NEW FLAKY TEST : " << test_case_header << " --------------" << COLOR_RESET); \
-    static int TINYTEST_FLAKY_TEST_PASSES = 0; \
-    static int TINYTEST_FLAKY_TEST_FAILS  = 0; \
-    static int TINYTEST_FLAKY_TEST_SKIPS  = 0; \
-    static int TINYTEST_FLAKY_TEST_TOTAL_ITERATIONS = test_case_iterations; \
-    for (int TINYTEST_FLAKY_TEST_ITERATION = 0; TINYTEST_FLAKY_TEST_ITERATION < test_case_iterations; TINYTEST_FLAKY_TEST_ITERATION++) { \
-        int TINYTEST_CURRENT_FLAKY_TEST_RESULT = new_test_case("Flaky Test Run " << TINYTEST_FLAKY_TEST_ITERATION + 1)
+#define new_flaky_test_case_pro(test_case_header, test_case_iterations, ...) { \
+    static std::unordered_set<std::string> TINYTEST_TAGS = { __VA_ARGS__ } ; \
+    if (!(TINYTEST_TAGS.empty() && TINYTEST_CURRENT_TAG != "") && !(!TINYTEST_TAGS.empty() && !TINYTEST_TAGS.count(TINYTEST_CURRENT_TAG) && TINYTEST_CURRENT_TAG != "")) { \
+        test_print_important(COLOR_GRAY << "\n\n-------------- NEW FLAKY TEST : " << test_case_header << " --------------" << COLOR_RESET); \
+        static int TINYTEST_FLAKY_TEST_PASSES = 0; \
+        static int TINYTEST_FLAKY_TEST_FAILS  = 0; \
+        static int TINYTEST_FLAKY_TEST_SKIPS  = 0; \
+        static int TINYTEST_FLAKY_TEST_TOTAL_ITERATIONS = test_case_iterations; \
+        for (int TINYTEST_FLAKY_TEST_ITERATION = 0; TINYTEST_FLAKY_TEST_ITERATION < test_case_iterations; TINYTEST_FLAKY_TEST_ITERATION++) { \
+            int TINYTEST_CURRENT_FLAKY_TEST_RESULT = new_test_case("Flaky Test Run " << TINYTEST_FLAKY_TEST_ITERATION + 1, __VA_ARGS__)
 
 /**
  * @brief Creates a new flaky test case in a new scope ; basically, a test that will be run multiple times to check for race conditions and the likes
  * @param test_case_header The name of the test case.
+ * @param tags A list of tags to apply to the flaky test case, separated by commas
  */
-#define new_flaky_test_case(test_case_header) new_flaky_test_case_pro(test_case_header, TINYTEST_FLAKY_TEST_ITERATIONS)
+#define new_flaky_test_case(test_case_header, ...) new_flaky_test_case_pro(test_case_header, TINYTEST_FLAKY_TEST_ITERATIONS, __VA_ARGS__)
 
 /**
  * @brief Closes a flaky test case, and prints out the amount of test cases passed, failed, and skipped
@@ -325,7 +329,9 @@
     test_print_important(COLOR_GRAY << "\n\n" << _small_line() << "\n\tPassed: " << COLOR_GREEN << TINYTEST_FLAKY_TEST_PASSES << "/" << TINYTEST_FLAKY_TEST_TOTAL_ITERATIONS << \
         COLOR_GRAY << ", Failed: " << COLOR_RED << TINYTEST_FLAKY_TEST_FAILS << "/" << TINYTEST_FLAKY_TEST_TOTAL_ITERATIONS << \
         COLOR_GRAY << ", Skipped: " << TINYTEST_FLAKY_TEST_SKIPS << "/" << TINYTEST_FLAKY_TEST_TOTAL_ITERATIONS << \
-    COLOR_RESET); }
+    COLOR_RESET); \
+    }\
+}
 
 /**
  * @brief Whether a TinyTest flag is enabled.

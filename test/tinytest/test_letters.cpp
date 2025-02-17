@@ -68,7 +68,7 @@ new_test() {
     end_test_case();
 
     srand(time(NULL));
-    new_flaky_test_case("Flaky tests !");
+    new_flaky_test_case("Flaky tests !", "Flaky");
         int randomChosenInt = rand() % 3;
         switch (randomChosenInt)
         {
