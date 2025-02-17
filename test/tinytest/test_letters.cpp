@@ -7,6 +7,7 @@
 
 
 new_test() {
+    tinytest_set_available_flags("TEST", "TESTS");
     handle_command_line_args();
 
     new_test_case("Test lookup for letter, lowercase");

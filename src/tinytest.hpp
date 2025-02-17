@@ -14,7 +14,7 @@
 #include <set>
 
 /// @brief Current version of TinyTest. Follows [Semantic Versioning](https://semver.org/).
-#define TINYTEST_VERSION "1.17.0"
+#define TINYTEST_VERSION "1.18.0"
 
 #ifndef TINYTEST_ASSERTION_FAILED_TO_STDERR
 /// @brief When an assertion fails, some output gets generated and sent to stderr. Setting this constant to 0 disables this behaviour.
@@ -334,6 +334,8 @@
  */
 #define is_tinytest_flag_enabled(flag_name) (TINYTEST_ENABLED_USER_FLAGS.find(flag_name) != TINYTEST_ENABLED_USER_FLAGS.end())
 
+#define tinytest_set_available_flags(...) TINYTEST_AVAILABLE_FLAGS = { __VA_ARGS__ }
+
 /// @brief Call after creating a new test. Allows the test framework to know whether to be verbose or not.
 #define handle_command_line_args() \
     bool TINYTEST_FLAG_VERBOSE = true; \
@@ -377,6 +379,16 @@
             while (std::getline(tinytest_flags, tinytest_current_flag, ',')) \
                 TINYTEST_ENABLED_USER_FLAGS.insert(tinytest_current_flag); \
         } \
+        else if (strcmp(argv[i], "show-flags") == 0 || strcmp(argv[i], "available-flags") == 0 || strcmp(argv[i], "flags") == 0) { \
+            if (!TINYTEST_AVAILABLE_FLAGS.empty()) { \
+                std::cout << "Available flags :\n"; \
+                for (const std::string& currentFlag : TINYTEST_AVAILABLE_FLAGS) \
+                    std::cout << "- " << currentFlag << "\n"; \
+            } \
+            else std::cout << "This test program doesn't seem to implement any flags." << std::endl; \
+            std::cout << std::flush; \
+            return 0; \
+        } \
         else if (strcmp(argv[i], "help") == 0 || strcmp(argv[i], "-h") == 0) { \
             std::cout << "TinyTest CLI arguments :\n" \
             << "- help, -h :\n\tShows this message\n" \
@@ -386,6 +398,7 @@
             << "- summary, shorten, short, -s :\n\tRemoves the long details from failed asserts. Failed asserts will only show the 'FAILED' message.\n" \
             << "- errors, error-only, -e :\n\tONLY shows the long details from failed asserts.\n" \
             << "- important-only, important, -i :\n\tOnly shows test case names and statuses ; a.k.a the most important stuff. Helps summarize in case of long tests.\n" \
+            << "- show-flags, available-flags, flags :\n\tShows which flags the test program can receive. Not every program will implement this.\n" \
             << "- tag:<tag>, -t:<tag> :\n\tOnly runs test with the corresponding tag. <tag> should be a valid string.\n" \
             << "- flags:<flags>, -f:<flags> :\n\tEnables the given tags. These should be one word, separated by commas.\n" \
             << std::endl; \
@@ -402,7 +415,9 @@
  * @brief Sarts a new test within the test framework. Needs a body.
  * @warning This is by all means a `main` function. Make sure there is no other main function in your program.
  */
-#define new_test() static bool TINYTEST_ALL_TESTS_PASSED = true; int main(int argc, char** argv)
+#define new_test() static bool TINYTEST_ALL_TESTS_PASSED = true; \
+    static std::unordered_set<std::string> TINYTEST_AVAILABLE_FLAGS = {}; \
+    int main(int argc, char** argv)
 
 /// @brief To be called after every test has run. Terminates the testing process with code 0 if all tests passed, and code 1 if at least one test failed.
 #define end_of_all_tests() return (TINYTEST_ALL_TESTS_PASSED) ? 0 : 1
