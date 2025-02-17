@@ -14,7 +14,7 @@
 #include <set>
 
 /// @brief Current version of TinyTest. Follows [Semantic Versioning](https://semver.org/).
-#define TINYTEST_VERSION "1.19.0"
+#define TINYTEST_VERSION "1.20.0"
 
 #ifndef TINYTEST_ASSERTION_FAILED_TO_STDERR
 /// @brief When an assertion fails, some output gets generated and sent to stderr. Setting this constant to 0 disables this behaviour.
@@ -255,6 +255,16 @@
     std::vector<std::chrono::_V2::system_clock::time_point> TINYTEST_BENCHMARK_VECTORS; \
     TINYTEST_SETUP_FUNCTION(); \
     benchmark_start()
+
+#define should_run_test(tags, current_tag) [&]() { \
+    bool returnVal = true; \
+    if (tags.empty() && current_tag != "") returnVal = false; \
+    if (!tags.empty() && current_tag.length() >= 1 && current_tag != "") { \
+        if (TINYTEST_CURRENT_TAG.at(0) != '!' && !TINYTEST_TAGS.count(TINYTEST_CURRENT_TAG)) returnVal = false; \
+        if (TINYTEST_CURRENT_TAG.at(0) == '!' && TINYTEST_TAGS.count(TINYTEST_CURRENT_TAG.substr(1))) returnVal = false; \
+    } \
+    return returnVal; \
+}()
 /** @endcond */
 
 /**
@@ -264,8 +274,7 @@
  */
 #define new_test_case(test_case_header, ...) _base_test_case(test_case_header, \
     static std::unordered_set<std::string> TINYTEST_TAGS = { __VA_ARGS__ } ; \
-    if (TINYTEST_TAGS.empty() && TINYTEST_CURRENT_TAG != "") return TINYTEST_SKIP; \
-    if (!TINYTEST_TAGS.empty() && !TINYTEST_TAGS.count(TINYTEST_CURRENT_TAG) && TINYTEST_CURRENT_TAG != "") return TINYTEST_SKIP; \
+    if (!should_run_test(TINYTEST_TAGS, TINYTEST_CURRENT_TAG)) return TINYTEST_SKIP; \
 )
 
 /**
@@ -302,7 +311,7 @@
  */
 #define new_flaky_test_case_pro(test_case_header, test_case_iterations, ...) { \
     static std::unordered_set<std::string> TINYTEST_TAGS = { __VA_ARGS__ } ; \
-    if (!(TINYTEST_TAGS.empty() && TINYTEST_CURRENT_TAG != "") && !(!TINYTEST_TAGS.empty() && !TINYTEST_TAGS.count(TINYTEST_CURRENT_TAG) && TINYTEST_CURRENT_TAG != "")) { \
+    if (should_run_test(TINYTEST_TAGS, TINYTEST_CURRENT_TAG)) { \
         test_print_important(COLOR_GRAY << "\n\n-------------- NEW FLAKY TEST : " << test_case_header << " --------------" << COLOR_RESET); \
         static int TINYTEST_FLAKY_TEST_PASSES = 0; \
         static int TINYTEST_FLAKY_TEST_FAILS  = 0; \
@@ -381,9 +390,13 @@
         } \
         else if (strncmp(argv[i], "tag:", strlen("tag:")) == 0) { \
             TINYTEST_CURRENT_TAG = std::string(argv[i] + strlen("tag:")); \
+            if (TINYTEST_CURRENT_TAG == "*") \
+                TINYTEST_CURRENT_TAG = ""; \
         } \
         else if (strncmp(argv[i], "-t:", strlen("-t:")) == 0) { \
             TINYTEST_CURRENT_TAG = std::string(argv[i] + strlen("-t:")); \
+            if (TINYTEST_CURRENT_TAG == "*") \
+                TINYTEST_CURRENT_TAG = ""; \
         } \
         else if (strncmp(argv[i], "flags:", strlen("flags:")) == 0) { \
             std::stringstream tinytest_flags(argv[i] + strlen("flags:")); \
@@ -428,7 +441,7 @@
             << "- important-only, important, -i :\n\tOnly shows test case names and statuses ; a.k.a the most important stuff. Helps summarize in case of long tests.\n" \
             << "- show-flags, available-flags, flags :\n\tShows which flags the test program can receive. Not every program will implement this.\n" \
             << "- show-tags, available-tags, tags :\n\tShows which flags the test program can receive. Not every program will implement this.\n" \
-            << "- tag:<tag>, -t:<tag> :\n\tOnly runs test with the corresponding tag. <tag> should be a valid string.\n" \
+            << "- tag:<tag>, -t:<tag> :\n\tOnly runs test with the corresponding tag. <tag> should be a valid string.\n\tPrefix the <tag> by a '!' to make all tags run except this one.\n\tLeave empty or use '*' to run all tags.\n" \
             << "- flags:<flags>, -f:<flags> :\n\tEnables the given tags. These should be one word, separated by commas.\n" \
             << std::endl; \
             return 0; \
