@@ -14,7 +14,7 @@
 #include <set>
 
 /// @brief Current version of TinyTest. Follows [Semantic Versioning](https://semver.org/).
-#define TINYTEST_VERSION "1.20.0"
+#define TINYTEST_VERSION "1.21.0"
 
 #ifndef TINYTEST_ASSERTION_FAILED_TO_STDERR
 /// @brief When an assertion fails, some output gets generated and sent to stderr. Setting this constant to 0 disables this behaviour.
@@ -29,6 +29,19 @@
 #ifndef TINYTEST_COLORIZE_STDERR
 /// @brief Whether or not to colorize the stderr output.
 #define TINYTEST_COLORIZE_STDERR 1
+#endif
+
+#ifndef TINYTEST_FORCE_MICROSECOND_BENCHMARK_PRECISION
+/// @brief If set to 1, benchmarks will output their value in microseconds. 
+///    Otherwise, they will output the best suited unit for the job (default).
+#define TINYTEST_FORCE_MICROSECOND_BENCHMARK_PRECISION 0
+#endif
+
+#ifndef TINYTEST_FORCE_MILLISECOND_BENCHMARK_PRECISION
+/// @brief If set to 1, benchmarks will output their value in milliseconds, 
+///     unless it is sub-millisecond, at which point the value will be outputted in microseconds.
+///     Otherwise, they will output the best suited unit for the job (default).
+#define TINYTEST_FORCE_MILLISECOND_BENCHMARK_PRECISION 0
 #endif
 
 #ifndef TINYTEST_STANDARD_OUTPUT
@@ -177,9 +190,9 @@
 
 /** @cond PRIVATE */
 #define _best_time_value(microseconds) \
-    ((microseconds < 1'000) ? microseconds : ((microseconds < 1'000'000) ? (microseconds / 1'000) : (microseconds / 1'000'000)))
+    ((microseconds < 1'000 || TINYTEST_FORCE_MICROSECOND_BENCHMARK_PRECISION) ? microseconds : ((microseconds < 1'000'000 || TINYTEST_FORCE_MILLISECOND_BENCHMARK_PRECISION) ? (microseconds / 1'000) : (microseconds / 1'000'000)))
 #define _best_time_unit(microseconds) \
-    ((microseconds < 1'000) ? "µs" : ((microseconds < 1'000'000) ? "ms" : "s"))
+    ((microseconds < 1'000 || TINYTEST_FORCE_MICROSECOND_BENCHMARK_PRECISION) ? "µs" : ((microseconds < 1'000'000 || TINYTEST_FORCE_MILLISECOND_BENCHMARK_PRECISION) ? "ms" : "s"))
 /** @endcond */
 
 
