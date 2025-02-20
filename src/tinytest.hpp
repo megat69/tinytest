@@ -14,7 +14,7 @@
 #include <set>
 
 /// @brief Current version of TinyTest. Follows [Semantic Versioning](https://semver.org/).
-#define TINYTEST_VERSION "1.21.0"
+#define TINYTEST_VERSION "1.21.1"
 
 #ifndef TINYTEST_ASSERTION_FAILED_TO_STDERR
 /// @brief When an assertion fails, some output gets generated and sent to stderr. Setting this constant to 0 disables this behaviour.
@@ -271,7 +271,7 @@
 
 #define should_run_test(tags, current_tag) [&]() { \
     bool returnVal = true; \
-    if (tags.empty() && current_tag != "") returnVal = false; \
+    if (tags.empty() && (current_tag != "" && current_tag.at(0) != '!')) returnVal = false; \
     if (!tags.empty() && current_tag.length() >= 1 && current_tag != "") { \
         if (TINYTEST_CURRENT_TAG.at(0) != '!' && !TINYTEST_TAGS.count(TINYTEST_CURRENT_TAG)) returnVal = false; \
         if (TINYTEST_CURRENT_TAG.at(0) == '!' && TINYTEST_TAGS.count(TINYTEST_CURRENT_TAG.substr(1))) returnVal = false; \
