@@ -14,7 +14,7 @@
 #include <set>
 
 /// @brief Current version of TinyTest. Follows [Semantic Versioning](https://semver.org/).
-#define TINYTEST_VERSION "1.21.1"
+#define TINYTEST_VERSION "1.21.2"
 
 #ifndef TINYTEST_ASSERTION_FAILED_TO_STDERR
 /// @brief When an assertion fails, some output gets generated and sent to stderr. Setting this constant to 0 disables this behaviour.
@@ -214,7 +214,7 @@
     test_print_important(COLOR_GRAY << \
     ((TINYTEST_CURRENT_BENCHMARK == 0) ? "Test" : "Benchmark id #") << ((TINYTEST_CURRENT_BENCHMARK == 0) ? "" : std::to_string(TINYTEST_CURRENT_BENCHMARK).c_str()) << " completed in " \
      << COLOR_MAGENTA << _best_time_value(TINYTEST_TIMING_DURATION.count()) << \
-    COLOR_GRAY << _best_time_unit(TINYTEST_TIMING_DURATION.count()) << COLOR_RESET); \
+    _best_time_unit(TINYTEST_TIMING_DURATION.count()) << COLOR_RESET); \
     TINYTEST_BENCHMARK_VECTORS.pop_back(); \
 }
 
