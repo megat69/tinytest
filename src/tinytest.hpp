@@ -14,7 +14,7 @@
 #include <set>
 
 /// @brief Current version of TinyTest. Follows [Semantic Versioning](https://semver.org/).
-#define TINYTEST_VERSION "1.21.2"
+#define TINYTEST_VERSION "1.21.3"
 
 #ifndef TINYTEST_ASSERTION_FAILED_TO_STDERR
 /// @brief When an assertion fails, some output gets generated and sent to stderr. Setting this constant to 0 disables this behaviour.
@@ -443,7 +443,7 @@
             std::cout << std::flush; \
             return 0; \
         } \
-        else if (strcmp(argv[i], "help") == 0 || strcmp(argv[i], "-h") == 0) { \
+        else if (strcmp(argv[i], "help") == 0 || strcmp(argv[i], "--help") == 0 || strcmp(argv[i], "-h") == 0) { \
             std::cout << "TinyTest CLI arguments :\n" \
             << "- help, -h :\n\tShows this message\n" \
             << "- version :\n\tShows the current TinyTest version\n" \
