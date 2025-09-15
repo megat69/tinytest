@@ -14,7 +14,7 @@
 #include <set>
 
 /// @brief Current version of TinyTest. Follows [Semantic Versioning](https://semver.org/).
-#define TINYTEST_VERSION "1.21.3"
+#define TINYTEST_VERSION "1.21.4"
 
 #ifndef TINYTEST_ASSERTION_FAILED_TO_STDERR
 /// @brief When an assertion fails, some output gets generated and sent to stderr. Setting this constant to 0 disables this behaviour.
@@ -434,7 +434,7 @@
             return 0; \
         } \
         else if (strcmp(argv[i], "show-tags") == 0 || strcmp(argv[i], "available-tags") == 0 || strcmp(argv[i], "tags") == 0) { \
-            if (!TINYTEST_AVAILABLE_FLAGS.empty()) { \
+            if (!TINYTEST_AVAILABLE_TAGS.empty()) { \
                 std::cout << "Available tags :\n"; \
                 for (const std::string& currentTag : TINYTEST_AVAILABLE_TAGS) \
                     std::cout << "- " << currentTag << "\n"; \
