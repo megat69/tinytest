@@ -11,8 +11,8 @@ CleanBuildFiles() {
 }
 
 CleanDocs() {
-    rm -rf ./doc/html/*
-    rm -rf ./doc/latex/*
+    rm -rf ./doc/html/
+    rm -rf ./doc/latex/
     echo "Cleaned documentation files"
 }
 
@@ -30,8 +30,8 @@ else
                 CleanBinaries ;;
             build)
                 CleanBuildFiles ;;
-            #doc|docs|documentation)
-            #    CleanDocs ;;
+            doc|docs|documentation)
+               CleanDocs ;;
             *)
                 echo "Argument inconnu : \"$ARGUMENT\"" >&2 ; exit 1
         esac
